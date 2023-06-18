@@ -1,0 +1,51 @@
+name: "OIDC::Test"
+
+on:
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Environment"
+                required: true
+                default: "dev"
+
+jobs:
+    deploy:
+      name: Load the baseline
+      runs-on: ubuntu-latest
+      # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+      permissions:
+        id-token: write
+        contents: read
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '18'
+      - name: Install packages
+        run: |
+          yarn install
+      - name: Install dependencies
+        run: npm install -g aws-cdk
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::216211142709:role/AWSOpenIdRole
+          aws-region: us-west-2
+      - name: Run cdk
+        run: |
+            cd apps/tutorseekers-api
+            cdk deploy -c setup=true --require-approval never
+            
+    #   - name: Copy files to the test website with the AWS CLI
+    #     run: |
+    #       aws s3 sync . s3://my-s3-test-website-bucket
+    #   - name: Configure AWS credentials from Production account
+    #     uses: aws-actions/configure-aws-credentials@v2
+    #     with:
+    #       role-to-assume: arn:aws:iam::222222222222:role/my-github-actions-role-prod
+    #       aws-region: us-west-2
+    #   - name: Copy files to the production website with the AWS CLI
+    #     run: |
+    #       aws s3 sync . s3://my-s3-prod-website-bucket

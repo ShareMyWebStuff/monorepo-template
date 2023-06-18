@@ -1,0 +1,42 @@
+name: "Deploy :: Dev"
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        default: "dev"
+
+jobs:
+
+  build-website:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+      - name: List
+        run: ls -ltr
+      - name: Build Website and Zip
+        run: ./.github/deploy/scripts/lint_test_build.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build.zip
+          path: build.zip
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "18.x"
+
+  #     - name: Deploy
+  #       uses:
