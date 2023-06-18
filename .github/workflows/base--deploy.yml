@@ -1,4 +1,4 @@
-name: "OIDC::Test"
+name: "Base Infrastructure::Deploy"
 
 on:
     workflow_dispatch:
