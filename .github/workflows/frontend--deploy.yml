@@ -39,6 +39,7 @@ jobs:
       - name: Run cdk
         run: |
             cd apps/frontend-deploy
+            yarn build
             cdk deploy -c env=dev --require-approval never
             
     #   - name: Copy files to the test website with the AWS CLI
