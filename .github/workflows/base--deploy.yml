@@ -1,12 +1,12 @@
 name: "Base Infrastructure::Deploy"
 
 on:
-    workflow_dispatch:
-        inputs:
-            environment:
-                description: "Environment"
-                required: true
-                default: "dev"
+  workflow_dispatch:
+    inputs:
+      setup:
+        description: 'Setup the base infrastructure'
+        required: true
+        default: 'false'
 
 jobs:
     deploy:
