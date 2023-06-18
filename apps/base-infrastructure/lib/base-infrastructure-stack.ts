@@ -17,7 +17,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
       domainName: buildConfig.DomainName
     })
 
-    // // Create the certificate
+    // Create the certificate
     const certificate = new cm.Certificate (this, "Certificate", {
       certificateName: buildConfig.Prefix + '-certificate',
       domainName: buildConfig.DomainName,
