@@ -67,6 +67,12 @@ const main = async () => {
 
   cdk.Tags.of(app).add('App', buildConfig.App)
 
+  console.log ('######################################################')
+  console.log ('######################################################')
+  console.log ('######################################################')
+  console.log (buildConfig.AWSProfileRegion)
+  console.log (buildConfig.AWSAccountID)
+
   const stackProps: cdk.StackProps = {
     env: {
       region: buildConfig.AWSProfileRegion,
