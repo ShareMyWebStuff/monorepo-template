@@ -5,7 +5,7 @@ import * as yaml from 'js-yaml'
 import {BuildConfig} from '../lib/build-config'
 import * as fs from 'fs'
 import * as path from 'path'
-import { BaseInfrastructureStack } from '../lib/base-infrastructure-stack';
+import { FrontendDeployStack } from '../lib/frontend-deploy-stack';
 
 const app = new cdk.App();
 
@@ -80,7 +80,7 @@ const main = async () => {
   // Create initial stack of items we need for all environments
   if ( buildConfig.RunSetup){
     let initialStackName = buildConfig.Prefix + '-setup'
-    const mainStack = new BaseInfrastructureStack( app, initialStackName, buildConfig, stackProps)
+    const mainStack = new FrontendDeployStack( app, initialStackName, buildConfig, stackProps)
   }
 
 }

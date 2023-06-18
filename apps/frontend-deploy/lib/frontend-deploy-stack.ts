@@ -8,7 +8,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 
-export class BaseInfrastructureStack extends cdk.Stack {
+export class FrontendDeployStack extends cdk.Stack {
   constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps) {
     super(scope, id, props);
 
