@@ -77,9 +77,8 @@ const main = async () => {
   // Check is setup has been run if environment is set
   // const a =  s3.Bucket.fromBucketName(app, buildConfig.Prefix + '-dev-upload-private', buildConfig.Prefix + '-dev-upload-private)
 
-  // Create initial stack of items we need for all environments
-  if ( buildConfig.RunSetup){
-    let initialStackName = buildConfig.Prefix + '-setup'
+  if ( ['dev', 'stg', 'prd'].includes(buildConfig.Environment) ){
+    let initialStackName = buildConfig.Prefix + "-" + buildConfig.Environment + '-fe-deploy'
     const mainStack = new FrontendDeployStack( app, initialStackName, buildConfig, stackProps)
   }
 
