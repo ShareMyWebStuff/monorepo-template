@@ -38,7 +38,7 @@ jobs:
       #     yarn backend:build
       - name: Run cdk
         run: |
-            cd apps/tutorseekers-api
+            cd apps/frontend-deploy
             cdk deploy -c env=dev --require-approval never
             
     #   - name: Copy files to the test website with the AWS CLI
