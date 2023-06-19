@@ -40,18 +40,8 @@ const getConfig = () => {
   console.log (JSON.stringify(unparsedEnv))
 
   let buildConfig: BuildConfig = {
-    RunSetup: (!setup ? false: true),
-    Environment: env,
-
-    AWSAccountID: ensureString(unparsedEnv as object, 'AWSAccountID'),
-    AWSProfileName: ensureString(unparsedEnv as object, 'AWSProfileName'),
-    AWSProfileRegion: ensureString(unparsedEnv as object, 'AWSProfileRegion'),
-
     App: ensureString(unparsedEnv as object, 'App'),
     Prefix: ensureString(unparsedEnv as object, 'Prefix'),
-
-    CorsServer: ensureString(unparsedEnv as object, 'CorsServer'),
-    ApiDomainName: ensureString(unparsedEnv as object, 'ApiDomainName'),
     DomainName: ensureString(unparsedEnv as object, 'DomainName')
   }
 
@@ -68,19 +58,13 @@ const main = async () => {
 
   const stackProps: cdk.StackProps = {
     env: {
-      region: buildConfig.AWSProfileRegion,
-      account: buildConfig.AWSAccountID,
+      region: 'us-east-1',
     },
   };
 
-  // Check is setup has been run if environment is set
-  // const a =  s3.Bucket.fromBucketName(app, buildConfig.Prefix + '-dev-upload-private', buildConfig.Prefix + '-dev-upload-private)
-
   // Create initial stack of items we need for all environments
-  if ( buildConfig.RunSetup){
-    let initialStackName = buildConfig.Prefix + '-setup-cert'
-    const mainStack = new CertificateStack( app, initialStackName, buildConfig, stackProps)
-  }
+  let initialStackName = buildConfig.Prefix + '-setup-cert'
+  const mainStack = new CertificateStack( app, initialStackName, buildConfig, stackProps)
 
 }
 

@@ -27,8 +27,8 @@ export class BaseInfrastructureStack extends cdk.Stack {
     //   subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
     //   validation: cm.CertificateValidation.fromDns(hostedZone),
     // })
-    const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
-    buildConfig.Prefix + '-cert-arn'
+    const certArn = buildConfig.Prefix + "-cert-arn"
+    const importCert = cdk.Fn.importValue(certArn);
 
 
     // Create the subdomains
