@@ -22,7 +22,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
       certificateName: buildConfig.Prefix + '-certificate',
       domainName: buildConfig.DomainName,
       subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
-      validation: cm.CertificateValidation.fromDns(hostedZone)
+      validation: cm.CertificateValidation.fromDns(hostedZone),
     })
 
         // Create the subdomains
