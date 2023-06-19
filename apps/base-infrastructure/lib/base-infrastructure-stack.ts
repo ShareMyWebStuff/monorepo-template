@@ -7,9 +7,12 @@ import { ApiGatewayDomain } from 'aws-cdk-lib/aws-route53-targets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
+interface CertProps {
+  [key: string]: string;
+}
 
 export class BaseInfrastructureStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, buildConfig: BuildConfig, props: CertProps) {
     super(scope, id, props);
 
     // Get the hosted zone
@@ -18,14 +21,17 @@ export class BaseInfrastructureStack extends cdk.Stack {
     })
 
     // Create the certificate
-    const certificate = new cm.Certificate (this, "Certificate", {
-      certificateName: buildConfig.Prefix + '-certificate',
-      domainName: buildConfig.DomainName,
-      subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
-      validation: cm.CertificateValidation.fromDns(hostedZone),
-    })
+    // const certificate = new cm.Certificate (this, "Certificate", {
+    //   certificateName: buildConfig.Prefix + '-certificate',
+    //   domainName: buildConfig.DomainName,
+    //   subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
+    //   validation: cm.CertificateValidation.fromDns(hostedZone),
+    // })
+    const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
+    buildConfig.Prefix + '-cert-arn'
 
-        // Create the subdomains
+
+    // Create the subdomains
         const devApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix  + '-domain-api-dev', {
           domainName: 'api-dev.' + buildConfig.DomainName,
           certificate: certificate,

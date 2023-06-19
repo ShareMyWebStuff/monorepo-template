@@ -1,0 +1,17 @@
+AWSAccountID: "216211142709"
+AWSProfileName: "cameronguy-biz-dev"
+AWSProfileRegion: "eu-west-2"
+
+App: "CameronGuy-biz"
+Prefix: "cameronguy-biz"
+
+CorsServer: http://localhost:3000
+DomainName: cameronguy.biz
+ApiDomainName: dev.cameronguy.biz
+DATABASEHOST: -arn
+DATABASEUSER: 
+DATABASEPASSWORD: 
+DATABASENAME: 
+DATABASEPORT: 
+JWTSECRET: 
+JWTREFRESHSECRET: 
