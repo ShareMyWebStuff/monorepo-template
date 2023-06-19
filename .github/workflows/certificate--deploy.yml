@@ -31,4 +31,4 @@ jobs:
       - name: Run cdk
         run: |
             cd apps/certificate
-            cdk deploy -c setup=true --require-approval never
+            cdk deploy --require-approval never
