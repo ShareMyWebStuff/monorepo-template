@@ -7,7 +7,7 @@ import { HostedZone } from 'aws-cdk-lib/aws-route53';
 
 export class CertificateStack extends cdk.Stack {
   constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps) {
-    super(scope, id, {...props, env: { region: "us-east-1" }});
+    super(scope, id, props);
 
     // Get the hosted zone
     const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
