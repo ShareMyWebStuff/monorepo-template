@@ -23,9 +23,15 @@ export class FrontendDeployStack extends cdk.Stack {
       const importBkt = cdk.Fn.importValue(buildConfig.Prefix + "-deploy-arn");
   
       const deployBucket = s3.Bucket.fromBucketArn(this, "DeployBucket", importBkt);
-      const cert = cm.Certificate.fromCertificateArn(this, "Certificate", importCert);
+      // const cert = cm.Certificate.fromCertificateArn(this, "Certificate", importCert);
   
-  
+      const cert = cm.Certificate.fromCertificateArn(
+        this,
+        "Certificate",
+        "arn:aws:acm:eu-west-2:216211142709:certificate/9d76439b-aeca-43b8-acf9-dc5f6c9f133c"
+      );
+
+
       console.log ('###############################################')
       console.log ('###############################################')
       console.log('importCert 👉', importCert.toString());
