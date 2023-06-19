@@ -41,6 +41,7 @@ const getConfig = () => {
   console.log (JSON.stringify(unparsedEnv))
 
   let buildConfig: BuildConfig = {
+    CertificateARN: ensureString(unparsedEnv as object, 'CertificateARN'),
     RunSetup: (!setup ? false: true),
     Environment: env,
 

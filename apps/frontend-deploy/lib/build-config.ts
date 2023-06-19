@@ -1,4 +1,5 @@
 export interface BuildConfig {
+    readonly CertificateARN : string
     readonly RunSetup : boolean
     readonly Environment : string
 

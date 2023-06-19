@@ -1,3 +1,5 @@
+CertificateARN: "arn:aws:acm:us-east-1:216211142709:certificate/7fb3994e-eab7-42a0-ab12-be99258ec706"
+
 AWSAccountID: "216211142709"
 AWSProfileName: "cameronguy-biz-dev"
 AWSProfileRegion: "eu-west-2"

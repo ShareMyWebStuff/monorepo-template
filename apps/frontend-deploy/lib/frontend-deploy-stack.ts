@@ -28,7 +28,7 @@ export class FrontendDeployStack extends cdk.Stack {
       const cert = cm.Certificate.fromCertificateArn(
         this,
         "Certificate",
-        "arn:aws:acm:eu-west-2:216211142709:certificate/9d76439b-aeca-43b8-acf9-dc5f6c9f133c"
+        buildConfig.CertificateARN
       );
 
 
