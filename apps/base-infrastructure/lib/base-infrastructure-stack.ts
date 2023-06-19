@@ -7,12 +7,9 @@ import { ApiGatewayDomain } from 'aws-cdk-lib/aws-route53-targets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-interface CertProps {
-  [key: string]: string;
-}
 
 export class BaseInfrastructureStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, buildConfig: BuildConfig, props: CertProps) {
+  constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps ) {
     super(scope, id, props);
 
     // Get the hosted zone
@@ -27,28 +24,28 @@ export class BaseInfrastructureStack extends cdk.Stack {
     //   subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
     //   validation: cm.CertificateValidation.fromDns(hostedZone),
     // })
-    const certArn = buildConfig.Prefix + "-cert-arn"
-    const importCert = cdk.Fn.importValue(certArn);
+    // const certArn = buildConfig.Prefix + "-cert-arn"
+    // const importCert = cdk.Fn.importValue(certArn);
 
 
     // Create the subdomains
         const devApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix  + '-domain-api-dev', {
           domainName: 'api-dev.' + buildConfig.DomainName,
-          certificate: certificate,
+          certificate: cm.Certificate.fromCertificateArn(this, 'cert', buildConfig.CertificateARN),
           endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
           securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
         })
     
         const stgApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix + '-domain-api-stg', {
           domainName: 'api-stg.' + buildConfig.DomainName,
-          certificate: certificate,
+          certificate: cm.Certificate.fromCertificateArn(this, 'cert', buildConfig.CertificateARN),
           endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
           securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
         })
     
         const prodApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix + '-domain-api-prod', {
           domainName: 'api.' + buildConfig.DomainName,
-          certificate: certificate,
+          certificate: cm.Certificate.fromCertificateArn(this, 'cert', buildConfig.CertificateARN),
           endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
           securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
         })
@@ -270,12 +267,9 @@ export class BaseInfrastructureStack extends cdk.Stack {
     
     
         // Stack outputs
-        // - Certificate ARN
-        let exportName = buildConfig.Prefix + '-cert-arn'
-        new cdk.CfnOutput(this, exportName, { value: certificate.certificateArn, exportName }); 
     
         // // - Api Dev Domain
-        exportName = buildConfig.Prefix + '-dev-api-domain'
+        let exportName = buildConfig.Prefix + '-dev-api-domain'
         new cdk.CfnOutput(this, exportName, { value: devApiDomain.domainNameAliasDomainName, exportName });
         exportName = buildConfig.Prefix + '-stg-api-domain'
         new cdk.CfnOutput(this, exportName, { value: stgApiDomain.domainNameAliasDomainName, exportName });

@@ -5,7 +5,6 @@ import * as yaml from 'js-yaml'
 import {BuildConfig} from '../lib/build-config'
 import * as fs from 'fs'
 import * as path from 'path'
-import { BaseInfrastructureCertStack } from '../lib/base-infrastructure-cert-stack';
 import { BaseInfrastructureStack } from '../lib/base-infrastructure-stack';
 
 const app = new cdk.App();
@@ -41,6 +40,7 @@ const getConfig = () => {
   console.log (JSON.stringify(unparsedEnv))
 
   let buildConfig: BuildConfig = {
+    CertificateARN: ensureString(unparsedEnv as object, 'CertificateARN'),
     RunSetup: (!setup ? false: true),
     Environment: env,
 
@@ -73,15 +73,6 @@ const main = async () => {
       account: buildConfig.AWSAccountID,
     },
   };
-
-  // Check is setup has been run if environment is set
-  // const a =  s3.Bucket.fromBucketName(app, buildConfig.Prefix + '-dev-upload-private', buildConfig.Prefix + '-dev-upload-private)
-
-  // Create initial stack of items we need for all environments
-  if ( buildConfig.RunSetup){
-    let initialStackName = buildConfig.Prefix + '-setup-cert'
-    const mainStack = new BaseInfrastructureCertStack( app, initialStackName, buildConfig, stackProps)
-  }
 
   // Create initial stack of items we need for all environments
   if ( buildConfig.RunSetup){

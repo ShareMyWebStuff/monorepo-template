@@ -42,6 +42,7 @@ const main = async () => {
   const stackProps: cdk.StackProps = {
     env: {
       region: 'us-east-1',
+      account: buildConfig.AWSAccountID,
     },
   };
 
