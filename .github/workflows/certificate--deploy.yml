@@ -30,7 +30,7 @@ jobs:
           aws-region: us-west-2
       - name: Run cdk
         run: |
-            cd apps/base-infrastructure
+            cd apps/certificate
             cdk deploy -c setup=true --require-approval never
             
     #   - name: Copy files to the test website with the AWS CLI
