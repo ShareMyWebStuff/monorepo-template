@@ -2,9 +2,6 @@ name: "Certificate::Deploy"
 
 on:
   workflow_dispatch:
-    inputs:
-      setup:
-        description: 'Create the certificate'
 
 jobs:
     deploy:
