@@ -23,7 +23,9 @@ const getConfig = () => {
   let buildConfig: BuildConfig = {
     App: ensureString(unparsedEnv as object, 'App'),
     Prefix: ensureString(unparsedEnv as object, 'Prefix'),
-    DomainName: ensureString(unparsedEnv as object, 'DomainName')
+    DomainName: ensureString(unparsedEnv as object, 'DomainName'),
+    AWSAccountID: ensureString(unparsedEnv as object, 'AWSAccountID'),
+    AWSProfileRegion: ensureString(unparsedEnv as object, 'AWSProfileRegion'),
   }
 
   console.log ('buildConfig')
@@ -40,6 +42,7 @@ const main = async () => {
   const stackProps: cdk.StackProps = {
     env: {
       region: 'us-east-1',
+      account: buildConfig.AWSAccountID,
     },
   };
 
