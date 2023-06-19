@@ -46,6 +46,9 @@ const main = async () => {
     },
   };
 
+  console.log ('app')
+  console.log (app)
+
   // Create initial stack of items we need for all environments
   let initialStackName = buildConfig.Prefix + '-setup-cert'
   const mainStack = new CertificateStack( app, initialStackName, buildConfig, stackProps)
