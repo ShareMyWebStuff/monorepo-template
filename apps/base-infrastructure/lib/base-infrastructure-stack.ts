@@ -9,7 +9,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 
 
 export class BaseInfrastructureStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps ) {
+  constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Get the hosted zone
@@ -17,26 +17,33 @@ export class BaseInfrastructureStack extends cdk.Stack {
       domainName: buildConfig.DomainName
     })
 
-    const cert = cm.Certificate.fromCertificateArn( this, "Certificate", buildConfig.CertificateARN );
+    // Create the certificate
+    const certificate = new cm.Certificate (this, "Certificate", {
+      certificateName: buildConfig.Prefix + '-certificate',
+      domainName: buildConfig.DomainName,
+      subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
+      validation: cm.CertificateValidation.fromDns(hostedZone),
+    })
+
 
     // Create the subdomains
     const devApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix  + '-domain-api-dev', {
       domainName: 'api-dev.' + buildConfig.DomainName,
-      certificate: cert,
+      certificate: cm.Certificate.fromCertificateArn(this, 'cert', 'arn:aws:acm:us-east-1:216211142709:certificate/7fb3994e-eab7-42a0-ab12-be99258ec706'),
       endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
       securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
     })
     
     const stgApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix + '-domain-api-stg', {
       domainName: 'api-stg.' + buildConfig.DomainName,
-      certificate: cert,
+      certificate: certificate,
       endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
       securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
     })
     
     const prodApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix + '-domain-api-prod', {
       domainName: 'api.' + buildConfig.DomainName,
-      certificate: cert,
+      certificate: certificate,
       endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
       securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
     })
@@ -59,35 +66,35 @@ export class BaseInfrastructureStack extends cdk.Stack {
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(prodApiDomain))
     })
     
-    //  Create buckets
-    // removalPolicy - DESTRY FOR PRE PROD, RETAIN FOR PROD
-    // autoDeleteObjects : set to true for pre prod as we do not want to keep these objects
-    const devPrivateUploadBucketName = buildConfig.Prefix + "-dev-upload-private"
-    const devPrivateUploadBucket = new s3.Bucket(this, devPrivateUploadBucketName, {
-      bucketName: devPrivateUploadBucketName,
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
-      accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-      versioned: false,
-      publicReadAccess: false,
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      cors: [
-        {
-          allowedMethods: [
-            s3.HttpMethods.GET,
-            s3.HttpMethods.POST,
-            s3.HttpMethods.PUT,
-            s3.HttpMethods.DELETE,
+        //  Create buckets
+        // removalPolicy - DESTRY FOR PRE PROD, RETAIN FOR PROD
+        // autoDeleteObjects : set to true for pre prod as we do not want to keep these objects
+        const devPrivateUploadBucketName = buildConfig.Prefix + "-dev-upload-private"
+        const devPrivateUploadBucket = new s3.Bucket(this, devPrivateUploadBucketName, {
+          bucketName: devPrivateUploadBucketName,
+          objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+          blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+          accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+          autoDeleteObjects: true,
+          versioned: false,
+          publicReadAccess: false,
+          encryption: s3.BucketEncryption.S3_MANAGED,
+          cors: [
+            {
+              allowedMethods: [
+                s3.HttpMethods.GET,
+                s3.HttpMethods.POST,
+                s3.HttpMethods.PUT,
+                s3.HttpMethods.DELETE,
+              ],
+              allowedOrigins: [buildConfig.CorsServer, `https://${buildConfig.DomainName}`],
+              // allowedOrigins: ['http://localhost:3000'],
+              allowedHeaders: ['*'],
+            },
           ],
-          allowedOrigins: [buildConfig.CorsServer, `https://${buildConfig.DomainName}`],
-          // allowedOrigins: ['http://localhost:3000'],
-          allowedHeaders: ['*'],
-        },
-      ],
-    });
-    const devPublicUploadBucketName = buildConfig.Prefix + "-dev-upload"
+        });
+        const devPublicUploadBucketName = buildConfig.Prefix + "-dev-upload"
     
         const devPublicUploadBucket = new s3.Bucket(this, devPublicUploadBucketName, {
           bucketName: devPublicUploadBucketName,
@@ -258,9 +265,12 @@ export class BaseInfrastructureStack extends cdk.Stack {
     
     
         // Stack outputs
+        // - Certificate ARN
+        let exportName = buildConfig.Prefix + '-cert-arn'
+        new cdk.CfnOutput(this, exportName, { value: certificate.certificateArn, exportName }); 
     
         // // - Api Dev Domain
-        let exportName = buildConfig.Prefix + '-dev-api-domain'
+        exportName = buildConfig.Prefix + '-dev-api-domain'
         new cdk.CfnOutput(this, exportName, { value: devApiDomain.domainNameAliasDomainName, exportName });
         exportName = buildConfig.Prefix + '-stg-api-domain'
         new cdk.CfnOutput(this, exportName, { value: stgApiDomain.domainNameAliasDomainName, exportName });
