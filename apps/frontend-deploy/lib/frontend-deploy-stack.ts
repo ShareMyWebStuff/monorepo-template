@@ -4,7 +4,9 @@ import {BuildConfig} from './build-config'
 import * as cm from 'aws-cdk-lib/aws-certificatemanager';
 import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { ApiGatewayDomain } from 'aws-cdk-lib/aws-route53-targets';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
 
@@ -56,10 +58,9 @@ export class FrontendDeployStack extends cdk.Stack {
       //   code: lambda.Code.fromAsset(path.join(__dirname, '/src/html-mapper-fn')),
       // });
   
-      // const poo = cdk.aws_cloudfront.FunctionDefinitionVersion.fromFunctionArn(this, 'html-mapper-dev', htmlMapperFn.functionArn);
-      const wee = new cdk.aws_cloudfront.Function(
+      const htmlMapperFn = new cdk.aws_cloudfront.Function(
         this,
-        'html-mapper-dev-wee',
+        'html-mapper-dev-fn',
         {
           functionName: 'html-mapper-dev-wee',
           code: cdk.aws_cloudfront.FunctionCode.fromFile({
@@ -67,21 +68,32 @@ export class FrontendDeployStack extends cdk.Stack {
           }),
         }
       )
+
+      // 
       const sf = new cdk.aws_cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
           origin: new cdk.aws_cloudfront_origins.S3Origin(deployBucket),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           functionAssociations: [
             {
-              function: wee,
+              function: htmlMapperFn,
               eventType: cdk.aws_cloudfront.FunctionEventType.VIEWER_REQUEST,
             },
           ],
         },
         domainNames: [`www.${buildConfig.DomainName}`],
         certificate: cert,
+        minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+        httpVersion: cloudfront.HttpVersion.HTTP2,
+        enableIpv6: true,
         defaultRootObject: 'index.html',
         errorResponses: [
+          // {
+          //   httpStatus: 403,
+          //   responsePagePath: '/index.html',
+          //   responseHttpStatus: 200,
+          //   ttl: cdk.Duration.minutes(0),
+          // },
           {
             httpStatus: 404,
             responseHttpStatus: 404,
@@ -98,5 +110,14 @@ export class FrontendDeployStack extends cdk.Stack {
         ),
       });
   
+      new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
+        sources: [s3deploy.Source.asset('../../frontend/dist')],
+        destinationBucket: deployBucket,
+        distribution: sf,
+        distributionPaths: ['/*'],
+      });
+
+      let exportName = buildConfig.Prefix + "-deploy-url" 
+      new cdk.CfnOutput(this, exportName, { value: `https.${buildConfig.DomainName}`, exportName }); 
   }
 }
