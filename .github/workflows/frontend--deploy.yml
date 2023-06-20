@@ -35,7 +35,7 @@ jobs:
           aws-region: us-west-2
       - name: Build
         run: |
-          yarn backend:build
+          yarn build
       - name: Run cdk
         run: |
             cd apps/frontend-deploy
