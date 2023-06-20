@@ -111,7 +111,7 @@ export class FrontendDeployStack extends cdk.Stack {
       });
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
-        sources: [s3deploy.Source.asset('../../frontend/dist')],
+        sources: [s3deploy.Source.asset('../../frontend/out')],
         destinationBucket: deployBucket,
         distribution: sf,
         distributionPaths: ['/*'],
