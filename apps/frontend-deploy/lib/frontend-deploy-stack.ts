@@ -88,7 +88,7 @@ export class FrontendDeployStack extends cdk.Stack {
           //   },
           // ],
         },
-        domainNames: [`www.${buildConfig.DomainName}`],
+        domainNames: [`${buildConfig.DomainName}`],
         certificate: cert,
         minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
         httpVersion: cloudfront.HttpVersion.HTTP2,
