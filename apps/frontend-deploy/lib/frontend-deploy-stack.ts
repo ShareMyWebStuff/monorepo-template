@@ -5,6 +5,7 @@ import * as cm from 'aws-cdk-lib/aws-certificatemanager';
 import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { ApiGatewayDomain } from 'aws-cdk-lib/aws-route53-targets';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -79,9 +80,21 @@ export class FrontendDeployStack extends cdk.Stack {
       // 
 // WORKED WITHOUT THE FUNCTION
 
-      const sf = new cdk.aws_cloudfront.Distribution(this, 'Distribution', {
+      const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
+        comment: `OAI for ${buildConfig.DomainName}`,
+      });
+
+      // const sf = new cdk.aws_cloudfront.Distribution(this, 'Distribution', {
+      //   defaultBehavior: {
+      //     origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket, {
+      // });
+
+      const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
+          // origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
+          origin: new origins.S3Origin(s3Bucket, {
+            originAccessIdentity: originAccessIdentity
+          }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           functionAssociations: [
             {
