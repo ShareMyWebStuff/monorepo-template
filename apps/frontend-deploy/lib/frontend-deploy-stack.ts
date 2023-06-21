@@ -77,16 +77,18 @@ export class FrontendDeployStack extends cdk.Stack {
       });
 
       // 
+// WORKED WITHOUT THE FUNCTION
+
       const sf = new cdk.aws_cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
           origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          // functionAssociations: [
-          //   {
-          //     function: htmlMapperFn,
-          //     eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-          //   },
-          // ],
+          functionAssociations: [
+            {
+              function: htmlMapperFn,
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
         },
         domainNames: [`${buildConfig.DomainName}`],
         certificate: cert,
