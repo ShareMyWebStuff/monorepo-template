@@ -58,28 +58,35 @@ export class FrontendDeployStack extends cdk.Stack {
       //   code: lambda.Code.fromAsset(path.join(__dirname, '/src/html-mapper-fn')),
       // });
   
-      const htmlMapperFn = new cdk.aws_cloudfront.Function(
+      const htmlMapperFn = new cloudfront.Function(
         this,
         'html-mapper-dev-fn',
         {
-          functionName: 'html-mapper-dev-wee',
+          functionName: 'html-mapper-dev-dev',
           code: cdk.aws_cloudfront.FunctionCode.fromFile({
             filePath: path.join(__dirname, '../dist/lib/src/html-mapper-fn/index.js'),
           }),
         }
       )
 
+      const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
+        bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      });
+
       // 
       const sf = new cdk.aws_cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          origin: new cdk.aws_cloudfront_origins.S3Origin(deployBucket),
+          origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          functionAssociations: [
-            {
-              function: htmlMapperFn,
-              eventType: cdk.aws_cloudfront.FunctionEventType.VIEWER_REQUEST,
-            },
-          ],
+          // functionAssociations: [
+          //   {
+          //     function: htmlMapperFn,
+          //     eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          //   },
+          // ],
         },
         domainNames: [`www.${buildConfig.DomainName}`],
         certificate: cert,
@@ -112,7 +119,7 @@ export class FrontendDeployStack extends cdk.Stack {
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: deployBucket,
+        destinationBucket: s3Bucket,
         distribution: sf,
         distributionPaths: ['/*'],
       });
