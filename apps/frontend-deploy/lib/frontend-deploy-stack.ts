@@ -84,50 +84,50 @@ export class FrontendDeployStack extends cdk.Stack {
         comment: `OAI for ${buildConfig.DomainName}`,
       });
 
-      deployBucket.addToResourcePolicy(new iam.PolicyStatement({
-        actions: ['s3:GetObject'],
-        resources: [deployBucket.arnForObjects('*')],
-        principals: [new iam.CanonicalUserPrincipal(originAccessIdentity.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
-      }));
+      // deployBucket.addToResourcePolicy(new iam.PolicyStatement({
+      //   actions: ['s3:GetObject'],
+      //   resources: [deployBucket.arnForObjects('*')],
+      //   principals: [new iam.CanonicalUserPrincipal(originAccessIdentity.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
+      // }));
 
-      const responseHeaderPolicy = new cloudfront.ResponseHeadersPolicy(this, 'SecurityHeadersResponseHeaderPolicy', {
-        comment: 'Security headers response header policy',
-        securityHeadersBehavior: {
-          contentSecurityPolicy: {
-            override: true,
-            contentSecurityPolicy: "default-src 'self'"
-          },
-          strictTransportSecurity: {
-            override: true,
-            accessControlMaxAge: cdk.Duration.days(2 * 365),
-            includeSubdomains: true,
-            preload: true
-          },
-          contentTypeOptions: {
-            override: true
-          },
-          referrerPolicy: {
-            override: true,
-            referrerPolicy: cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN
-          },
-          xssProtection: {
-            override: true,
-            protection: true,
-            modeBlock: true
-          },
-          frameOptions: {
-            override: true,
-            frameOption: cloudfront.HeadersFrameOption.DENY
-          }
-        }
-      });
+      // const responseHeaderPolicy = new cloudfront.ResponseHeadersPolicy(this, 'SecurityHeadersResponseHeaderPolicy', {
+      //   comment: 'Security headers response header policy',
+      //   securityHeadersBehavior: {
+      //     contentSecurityPolicy: {
+      //       override: true,
+      //       contentSecurityPolicy: "default-src 'self'"
+      //     },
+      //     strictTransportSecurity: {
+      //       override: true,
+      //       accessControlMaxAge: cdk.Duration.days(2 * 365),
+      //       includeSubdomains: true,
+      //       preload: true
+      //     },
+      //     contentTypeOptions: {
+      //       override: true
+      //     },
+      //     referrerPolicy: {
+      //       override: true,
+      //       referrerPolicy: cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN
+      //     },
+      //     xssProtection: {
+      //       override: true,
+      //       protection: true,
+      //       modeBlock: true
+      //     },
+      //     frameOptions: {
+      //       override: true,
+      //       frameOption: cloudfront.HeadersFrameOption.DENY
+      //     }
+      //   }
+      // });
 
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
-          // origin: new origins.S3Origin(deployBucket, {
-          //   originAccessIdentity: originAccessIdentity
-          // }),
+          // origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
+          origin: new origins.S3Origin(deployBucket, {
+            originAccessIdentity: originAccessIdentity
+          }),
           functionAssociations: [
             {
               function: htmlMapperFn,
@@ -135,7 +135,7 @@ export class FrontendDeployStack extends cdk.Stack {
             },
           ],
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          responseHeadersPolicy: responseHeaderPolicy,
+          // responseHeadersPolicy: responseHeaderPolicy,
         },
         domainNames: [`${buildConfig.DomainName}`],
         certificate: cert,
@@ -168,7 +168,7 @@ export class FrontendDeployStack extends cdk.Stack {
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: deployBucket,
+        destinationBucket: s3Bucket,
         distribution: sf,
         distributionPaths: ['/*'],
       });
