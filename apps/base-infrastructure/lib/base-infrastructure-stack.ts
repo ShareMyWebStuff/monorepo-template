@@ -237,29 +237,38 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     // Deployment bucket
     const deployBucketName = buildConfig.Prefix + "-deploy"
-    const deployBucket = new s3.Bucket(this, deployBucketName, {
+    // For production
+    // removalPolicy: RemovalPolicy.RETAIN,
+    // Deleted
+      // accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+      const deployBucket = new s3.Bucket(this, deployBucketName, {
       bucketName: deployBucketName,
       objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
-      accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      accessControl: s3.BucketAccessControl.PRIVATE,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       versioned: false,
       publicReadAccess: false,
       encryption: s3.BucketEncryption.S3_MANAGED,
-      cors: [
-        {
-          allowedMethods: [
-            s3.HttpMethods.GET,
-            s3.HttpMethods.POST,
-            s3.HttpMethods.PUT,
-            s3.HttpMethods.DELETE,
-          ],
-          allowedOrigins: [buildConfig.CorsServer, `https://${buildConfig.DomainName}`],
-          // allowedOrigins: ['http://localhost:3000'],
-          allowedHeaders: ['*'],
-        },
-      ],
+
+      //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
+      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+      //   autoDeleteObjects: true,
+      // cors: [
+      //   {
+      //     allowedMethods: [
+      //       s3.HttpMethods.GET,
+      //       s3.HttpMethods.POST,
+      //       s3.HttpMethods.PUT,
+      //       s3.HttpMethods.DELETE,
+      //     ],
+      //     allowedOrigins: [buildConfig.CorsServer, `https://${buildConfig.DomainName}`],
+      //     // allowedOrigins: ['http://localhost:3000'],
+      //     allowedHeaders: ['*'],
+      //   },
+      // ],
     });
     
     
