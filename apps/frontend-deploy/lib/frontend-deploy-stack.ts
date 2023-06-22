@@ -70,12 +70,12 @@ export class FrontendDeployStack extends cdk.Stack {
         }
       )
 
-      const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
-        bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
-        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
-      });
+      // const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
+      //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
+      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+      //   autoDeleteObjects: true,
+      // });
 
       // 
 // WORKED WITHOUT THE FUNCTION
@@ -92,7 +92,7 @@ export class FrontendDeployStack extends cdk.Stack {
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
           // origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
-          origin: new origins.S3Origin(s3Bucket, {
+          origin: new origins.S3Origin(deployBucket, {
             originAccessIdentity: originAccessIdentity
           }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -134,7 +134,7 @@ export class FrontendDeployStack extends cdk.Stack {
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: s3Bucket,
+        destinationBucket: deployBucket,
         distribution: sf,
         distributionPaths: ['/*'],
       });
