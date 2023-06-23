@@ -70,12 +70,31 @@ export class FrontendDeployStack extends cdk.Stack {
         }
       )
 
-      // const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
-      //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
-      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-      //   autoDeleteObjects: true,
-      // });
+
+      /**
+       * RUN THIS IN AND COMPARE THE BUCKETS.
+       * 
+       * THIS ISNT WORKING DUE TO THE BUCKETS
+       */
+
+
+
+
+
+      const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
+        bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
+        // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        // removalPolicy: cdk.RemovalPolicy.DESTROY,
+        // autoDeleteObjects: true,
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        accessControl: s3.BucketAccessControl.PRIVATE,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+        versioned: false,
+        publicReadAccess: false,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+      });
 
 
 
