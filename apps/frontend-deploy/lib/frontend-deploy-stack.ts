@@ -25,7 +25,7 @@ export class FrontendDeployStack extends cdk.Stack {
       const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
       const importBkt = cdk.Fn.importValue(buildConfig.Prefix + "-deploy-arn");
   
-      const deployBucket = s3.Bucket.fromBucketArn(this, "DeployBucket", importBkt);
+      // const deployBucket = s3.Bucket.fromBucketArn(this, "DeployBucket", importBkt);
       // const cert = cm.Certificate.fromCertificateArn(this, "Certificate", importCert);
   
       const cert = cm.Certificate.fromCertificateArn(
@@ -111,7 +111,7 @@ export class FrontendDeployStack extends cdk.Stack {
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
           // origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
-          origin: new origins.S3Origin(deployBucket, {
+          origin: new origins.S3Origin(s3Bucket, {
             originAccessIdentity: originAccessIdentity
           }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -153,7 +153,7 @@ export class FrontendDeployStack extends cdk.Stack {
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: deployBucket,
+        destinationBucket: s3Bucket,
         distribution: sf,
         distributionPaths: ['/*'],
       });
