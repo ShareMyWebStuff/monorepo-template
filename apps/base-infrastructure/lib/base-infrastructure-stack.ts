@@ -237,21 +237,35 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     // Deployment bucket
     const deployBucketName = buildConfig.Prefix + "-deploy"
+
+    
     // For production
     // removalPolicy: RemovalPolicy.RETAIN,
     // Deleted
       // accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
       const deployBucket = new s3.Bucket(this, deployBucketName, {
-      bucketName: deployBucketName,
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      accessControl: s3.BucketAccessControl.PRIVATE,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-      versioned: false,
-      publicReadAccess: false,
-      encryption: s3.BucketEncryption.S3_MANAGED,
+        bucketName: deployBucketName,
 
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        accessControl: s3.BucketAccessControl.PRIVATE,
+        versioned: false,
+        publicReadAccess: false,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+      // objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      // accessControl: s3.BucketAccessControl.PRIVATE,
+      // removalPolicy: cdk.RemovalPolicy.DESTROY,
+      // autoDeleteObjects: true,
+      // versioned: false,
+      // publicReadAccess: false,
+      // encryption: s3.BucketEncryption.S3_MANAGED,
+
+
+      
       //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
       //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       //   removalPolicy: cdk.RemovalPolicy.DESTROY,
