@@ -154,8 +154,8 @@ export class FrontendDeployStack extends cdk.Stack {
         distributionPaths: ['/*'],
       });
 
-      const originAccessIdentity2 = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
-        comment: `OAI for ${buildConfig.DomainName}`,
+      const originAccessIdentity2 = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity2', {
+        comment: `OAI for ${buildConfig.DomainName} 2`,
       });
 
       const sf2 = new cloudfront.Distribution(this, 'Distribution', {
