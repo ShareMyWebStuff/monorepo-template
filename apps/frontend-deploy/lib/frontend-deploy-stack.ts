@@ -27,9 +27,9 @@ export class FrontendDeployStack extends cdk.Stack {
       const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-stg-arn");
       const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-prod-arn");
   
-      const cfDevBkt = s3.Bucket.fromBucketArn(this, "DeployBucket", cfDevBktArn);
-      const cfStgBkt = s3.Bucket.fromBucketArn(this, "DeployBucket", cfStgBktArn);
-      const cfProdBkt = s3.Bucket.fromBucketArn(this, "DeployBucket", cfProdBktArn);
+      const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
+      const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
+      const cfProdBkt = s3.Bucket.fromBucketArn(this, "cfProdBktArn", cfProdBktArn);
   
       const cert = cm.Certificate.fromCertificateArn(
         this,
