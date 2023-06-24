@@ -109,8 +109,7 @@ export class FrontendDeployStack extends cdk.Stack {
 
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          // origin: new cdk.aws_cloudfront_origins.S3Origin(s3Bucket),
-          origin: new origins.S3Origin(deployBucket, {
+          origin: new origins.S3Origin(s3Bucket, {
             originAccessIdentity: originAccessIdentity
           }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -156,6 +155,14 @@ export class FrontendDeployStack extends cdk.Stack {
         distribution: sf,
         distributionPaths: ['/*'],
       });
+
+      new s3deploy.BucketDeployment(this, 'S3BucketDeployLocalStackBckt', {
+        sources: [s3deploy.Source.asset('../frontend/out')],
+        destinationBucket: s3Bucket,
+        distribution: sf,
+        distributionPaths: ['/*'],
+      });
+
 
       let exportName = buildConfig.Prefix + "-deploy-url" 
       new cdk.CfnOutput(this, exportName, { value: `https.${buildConfig.DomainName}`, exportName }); 
