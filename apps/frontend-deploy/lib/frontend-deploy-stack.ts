@@ -151,7 +151,7 @@ export class FrontendDeployStack extends cdk.Stack {
 
       const policy = new iam.PolicyStatement({
         actions: ["s3:GetObject"],
-        resources: [importBkt],
+        resources: [depBucket.bucketArn + "/*"],
         principals: [
             new iam.ServicePrincipal('cloudfront.amazonaws.com')
         ],
