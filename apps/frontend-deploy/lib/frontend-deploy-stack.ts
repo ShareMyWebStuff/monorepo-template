@@ -141,7 +141,7 @@ export class FrontendDeployStack extends cdk.Stack {
   
       const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
         zone: hostedZone,
-        recordName: buildConfig.DomainName,
+        recordName: 'dev.'+buildConfig.DomainName,
         target: cdk.aws_route53.RecordTarget.fromAlias(
           new cdk.aws_route53_targets.CloudFrontTarget(sf)
         ),
