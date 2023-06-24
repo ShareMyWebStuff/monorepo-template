@@ -23,11 +23,11 @@ export class FrontendDeployStack extends cdk.Stack {
   
 
       const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
-      const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-dev-arn");
+      // const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-dev-arn");
       const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-stg-arn");
       const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-prod-arn");
   
-      const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
+      // const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
       const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
       const cfProdBkt = s3.Bucket.fromBucketArn(this, "cfProdBktArn", cfProdBktArn);
   
@@ -57,21 +57,22 @@ export class FrontendDeployStack extends cdk.Stack {
 
 
 
-      // const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
-      //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
-      //   // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      //   // removalPolicy: cdk.RemovalPolicy.DESTROY,
-      //   // autoDeleteObjects: true,
-      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-      //   autoDeleteObjects: true,
+      const cfDevBkt = new s3.Bucket(this, 'S3Bucket', {
+        bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
+        // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        // removalPolicy: cdk.RemovalPolicy.DESTROY,
+        // autoDeleteObjects: true,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
 
-      //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      //   accessControl: s3.BucketAccessControl.PRIVATE,
-      //   versioned: false,
-      //   publicReadAccess: false,
-      //   encryption: s3.BucketEncryption.S3_MANAGED,
-      // });
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        accessControl: s3.BucketAccessControl.PRIVATE,
+        versioned: false,
+        publicReadAccess: false,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+      });
+      const cfDevBktArn = cfDevBkt.bucketArn;
 
 
 
@@ -94,7 +95,7 @@ export class FrontendDeployStack extends cdk.Stack {
 
 
       const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
-        comment: `OAI for ${buildConfig.DomainName}`,
+        comment: `OAI for dev.${buildConfig.DomainName}`,
       });
 
       // const sf = new cdk.aws_cloudfront.Distribution(this, 'Distribution', {
