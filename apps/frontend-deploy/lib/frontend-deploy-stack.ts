@@ -132,7 +132,7 @@ export class FrontendDeployStack extends cdk.Stack {
         ]
     });
 
-    // cfDevBkt.addToResourcePolicy(policy);
+    cfDevBkt.addToResourcePolicy(policy);
   
     const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
       zone: hostedZone,
