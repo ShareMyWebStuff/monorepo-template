@@ -96,6 +96,24 @@ export class FrontendDeployStack extends cdk.Stack {
 
 
 
+    // Deployment bucket
+    const depBucketName = buildConfig.Prefix + "-dep"
+    
+    const depBucket = new s3.Bucket(this, depBucketName, {
+      bucketName: depBucketName,
+
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      accessControl: s3.BucketAccessControl.PRIVATE,
+      versioned: false,
+      publicReadAccess: false,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
+
+
       const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
         comment: `OAI for ${buildConfig.DomainName}`,
       });
