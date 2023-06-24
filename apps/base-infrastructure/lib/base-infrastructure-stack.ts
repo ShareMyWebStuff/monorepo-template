@@ -339,12 +339,12 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     exportName = buildConfig.Prefix + "-cd-bucket-stg-name" 
     new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketName, exportName }); 
-    exportName = buildConfig.Prefix + "-cd-bucket-dev-arn" 
+    exportName = buildConfig.Prefix + "-cd-bucket-stg-arn" 
     new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketArn, exportName }); 
 
-    exportName = buildConfig.Prefix + "-cd-bucket-dev-name" 
+    exportName = buildConfig.Prefix + "-cd-bucket-prod-name" 
     new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketName, exportName }); 
-    exportName = buildConfig.Prefix + "-cd-bucket-dev-arn" 
+    exportName = buildConfig.Prefix + "-cd-bucket-prod-arn" 
     new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketArn, exportName }); 
 
   }
