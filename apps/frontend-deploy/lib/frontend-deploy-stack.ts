@@ -158,7 +158,7 @@ export class FrontendDeployStack extends cdk.Stack {
         comment: `OAI for ${buildConfig.DomainName} 2`,
       });
 
-      const sf2 = new cloudfront.Distribution(this, 'Distribution', {
+      const sf2 = new cloudfront.Distribution(this, 'Distribution2', {
         defaultBehavior: {
           origin: new origins.S3Origin(deployBucket, {
             originAccessIdentity: originAccessIdentity2
@@ -192,7 +192,7 @@ export class FrontendDeployStack extends cdk.Stack {
         ],
       });
   
-      const cfRecord2 = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+      const cfRecord2 = new cdk.aws_route53.ARecord(this, 'AliasRecord2', {
         zone: hostedZone,
         recordName: buildConfig.DomainName,
         target: cdk.aws_route53.RecordTarget.fromAlias(
