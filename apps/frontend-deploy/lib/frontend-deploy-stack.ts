@@ -125,7 +125,7 @@ export class FrontendDeployStack extends cdk.Stack {
 
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          origin: new origins.S3Origin(s3Bucket, {
+          origin: new origins.S3Origin(depBucket, {
             originAccessIdentity: originAccessIdentity
           }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -167,7 +167,7 @@ export class FrontendDeployStack extends cdk.Stack {
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: s3Bucket,
+        destinationBucket: depBucket,
         distribution: sf,
         distributionPaths: ['/*'],
       });
