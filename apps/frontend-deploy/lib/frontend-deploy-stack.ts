@@ -154,59 +154,59 @@ export class FrontendDeployStack extends cdk.Stack {
         distributionPaths: ['/*'],
       });
 
-      const originAccessIdentity2 = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity2', {
-        comment: `OAI for ${buildConfig.DomainName} 2`,
-      });
+      // const originAccessIdentity2 = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity2', {
+      //   comment: `OAI for ${buildConfig.DomainName} 2`,
+      // });
 
-      const sf2 = new cloudfront.Distribution(this, 'Distribution2', {
-        defaultBehavior: {
-          origin: new origins.S3Origin(deployBucket, {
-            originAccessIdentity: originAccessIdentity2
-          }),
-          viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          functionAssociations: [
-            {
-              function: htmlMapperFn,
-              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-            },
-          ],
-        },
-        domainNames: [`${buildConfig.DomainName}`],
-        certificate: cert,
-        minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-        httpVersion: cloudfront.HttpVersion.HTTP2,
-        enableIpv6: true,
-        defaultRootObject: 'index.html',
-        errorResponses: [
-          // {
-          //   httpStatus: 403,
-          //   responsePagePath: '/index.html',
-          //   responseHttpStatus: 200,
-          //   ttl: cdk.Duration.minutes(0),
-          // },
-          {
-            httpStatus: 404,
-            responseHttpStatus: 404,
-            responsePagePath: '/404.html',
-          },
-        ],
-      });
+      // const sf2 = new cloudfront.Distribution(this, 'Distribution2', {
+      //   defaultBehavior: {
+      //     origin: new origins.S3Origin(deployBucket, {
+      //       originAccessIdentity: originAccessIdentity2
+      //     }),
+      //     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      //     functionAssociations: [
+      //       {
+      //         function: htmlMapperFn,
+      //         eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      //       },
+      //     ],
+      //   },
+      //   domainNames: [`${buildConfig.DomainName}`],
+      //   certificate: cert,
+      //   minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+      //   httpVersion: cloudfront.HttpVersion.HTTP2,
+      //   enableIpv6: true,
+      //   defaultRootObject: 'index.html',
+      //   errorResponses: [
+      //     // {
+      //     //   httpStatus: 403,
+      //     //   responsePagePath: '/index.html',
+      //     //   responseHttpStatus: 200,
+      //     //   ttl: cdk.Duration.minutes(0),
+      //     // },
+      //     {
+      //       httpStatus: 404,
+      //       responseHttpStatus: 404,
+      //       responsePagePath: '/404.html',
+      //     },
+      //   ],
+      // });
   
-      const cfRecord2 = new cdk.aws_route53.ARecord(this, 'AliasRecord2', {
-        zone: hostedZone,
-        recordName: buildConfig.DomainName,
-        target: cdk.aws_route53.RecordTarget.fromAlias(
-          new cdk.aws_route53_targets.CloudFrontTarget(sf2)
-        ),
-      });
+      // const cfRecord2 = new cdk.aws_route53.ARecord(this, 'AliasRecord2', {
+      //   zone: hostedZone,
+      //   recordName: buildConfig.DomainName,
+      //   target: cdk.aws_route53.RecordTarget.fromAlias(
+      //     new cdk.aws_route53_targets.CloudFrontTarget(sf2)
+      //   ),
+      // });
 
 
-      new s3deploy.BucketDeployment(this, 'S3BucketDeployLocalStackBckt', {
-        sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: deployBucket,
-        distribution: sf2,
-        distributionPaths: ['/*'],
-      });
+      // new s3deploy.BucketDeployment(this, 'S3BucketDeployLocalStackBckt', {
+      //   sources: [s3deploy.Source.asset('../frontend/out')],
+      //   destinationBucket: deployBucket,
+      //   distribution: sf2,
+      //   distributionPaths: ['/*'],
+      // });
 
 
       let exportName = buildConfig.Prefix + "-deploy-url" 
