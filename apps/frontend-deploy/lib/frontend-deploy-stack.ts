@@ -22,9 +22,14 @@ export class FrontendDeployStack extends cdk.Stack {
       })
   
       const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
-      // const importBkt = cdk.Fn.importValue(buildConfig.Prefix + "-deploy-arn");
-      // const deployBucket = s3.Bucket.fromBucketArn(this, "DeployBucket", importBkt);
+      const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-dev-arn");
+      const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-stg-arn");
+      const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-prod-arn");
   
+      const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
+      const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
+      const cfProdBkt = s3.Bucket.fromBucketArn(this, "cfProdBktArn", cfProdBktArn);
+
       const cert = cm.Certificate.fromCertificateArn(
         this,
         "Certificate",
@@ -44,19 +49,19 @@ export class FrontendDeployStack extends cdk.Stack {
 
 
       // Deployment bucket
-      const depBucketName = buildConfig.Prefix + "-dep"
+      // const depBucketName = buildConfig.Prefix + "-dep"
     
-      const depBucket = new s3.Bucket(this, depBucketName, {
-        bucketName: depBucketName,
-        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
-        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-        accessControl: s3.BucketAccessControl.PRIVATE,
-        versioned: false,
-        publicReadAccess: false,
-        encryption: s3.BucketEncryption.S3_MANAGED,
-      });
+      // const depBucket = new s3.Bucket(this, depBucketName, {
+      //   bucketName: depBucketName,
+      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+      //   autoDeleteObjects: true,
+      //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      //   accessControl: s3.BucketAccessControl.PRIVATE,
+      //   versioned: false,
+      //   publicReadAccess: false,
+      //   encryption: s3.BucketEncryption.S3_MANAGED,
+      // });
 
       const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
         comment: `OAI for ${buildConfig.DomainName}`,
@@ -64,7 +69,7 @@ export class FrontendDeployStack extends cdk.Stack {
 
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          origin: new origins.S3Origin(depBucket, {
+          origin: new origins.S3Origin(cfDevBkt, {
             originAccessIdentity: originAccessIdentity
           }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -123,65 +128,10 @@ export class FrontendDeployStack extends cdk.Stack {
   
       new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: depBucket,
+        destinationBucket: cfDevBkt,
         distribution: sf,
         distributionPaths: ['/*'],
       });
-
-      // const originAccessIdentity2 = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity2', {
-      //   comment: `OAI for ${buildConfig.DomainName} 2`,
-      // });
-
-      // const sf2 = new cloudfront.Distribution(this, 'Distribution2', {
-      //   defaultBehavior: {
-      //     origin: new origins.S3Origin(deployBucket, {
-      //       originAccessIdentity: originAccessIdentity2
-      //     }),
-      //     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      //     functionAssociations: [
-      //       {
-      //         function: htmlMapperFn,
-      //         eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-      //       },
-      //     ],
-      //   },
-      //   domainNames: [`${buildConfig.DomainName}`],
-      //   certificate: cert,
-      //   minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-      //   httpVersion: cloudfront.HttpVersion.HTTP2,
-      //   enableIpv6: true,
-      //   defaultRootObject: 'index.html',
-      //   errorResponses: [
-      //     // {
-      //     //   httpStatus: 403,
-      //     //   responsePagePath: '/index.html',
-      //     //   responseHttpStatus: 200,
-      //     //   ttl: cdk.Duration.minutes(0),
-      //     // },
-      //     {
-      //       httpStatus: 404,
-      //       responseHttpStatus: 404,
-      //       responsePagePath: '/404.html',
-      //     },
-      //   ],
-      // });
-  
-      // const cfRecord2 = new cdk.aws_route53.ARecord(this, 'AliasRecord2', {
-      //   zone: hostedZone,
-      //   recordName: buildConfig.DomainName,
-      //   target: cdk.aws_route53.RecordTarget.fromAlias(
-      //     new cdk.aws_route53_targets.CloudFrontTarget(sf2)
-      //   ),
-      // });
-
-
-      // new s3deploy.BucketDeployment(this, 'S3BucketDeployLocalStackBckt', {
-      //   sources: [s3deploy.Source.asset('../frontend/out')],
-      //   destinationBucket: deployBucket,
-      //   distribution: sf2,
-      //   distributionPaths: ['/*'],
-      // });
-
 
       let exportName = buildConfig.Prefix + "-deploy-url" 
       new cdk.CfnOutput(this, exportName, { value: `https.${buildConfig.DomainName}`, exportName }); 
