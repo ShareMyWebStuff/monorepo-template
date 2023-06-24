@@ -236,55 +236,47 @@ export class BaseInfrastructureStack extends cdk.Stack {
     prodPublicUploadBucket.grantRead(new iam.AnyPrincipal());
 
     // Deployment bucket
-    const deployBucketName = buildConfig.Prefix + "-deploy"
+    const cfDevBucketName = buildConfig.Prefix + "-cf-dev"
 
-    
-    // For production
-    // removalPolicy: RemovalPolicy.RETAIN,
-    // Deleted
-      // accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-      const deployBucket = new s3.Bucket(this, deployBucketName, {
-        bucketName: deployBucketName,
-
-        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
-
-        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-        accessControl: s3.BucketAccessControl.PRIVATE,
-        versioned: false,
-        publicReadAccess: false,
-        encryption: s3.BucketEncryption.S3_MANAGED,
-      // objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      // accessControl: s3.BucketAccessControl.PRIVATE,
-      // removalPolicy: cdk.RemovalPolicy.DESTROY,
-      // autoDeleteObjects: true,
-      // versioned: false,
-      // publicReadAccess: false,
-      // encryption: s3.BucketEncryption.S3_MANAGED,
-
-
-      
-      //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
-      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-      //   autoDeleteObjects: true,
-      // cors: [
-      //   {
-      //     allowedMethods: [
-      //       s3.HttpMethods.GET,
-      //       s3.HttpMethods.POST,
-      //       s3.HttpMethods.PUT,
-      //       s3.HttpMethods.DELETE,
-      //     ],
-      //     allowedOrigins: [buildConfig.CorsServer, `https://${buildConfig.DomainName}`],
-      //     // allowedOrigins: ['http://localhost:3000'],
-      //     allowedHeaders: ['*'],
-      //   },
-      // ],
+    const cfDevBucket = new s3.Bucket(this, cfDevBucketName, {
+      bucketName: cfDevBucketName,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      accessControl: s3.BucketAccessControl.PRIVATE,
+      versioned: false,
+      publicReadAccess: false,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
     
+    const cfStgBucketName = buildConfig.Prefix + "-cf-stg"
+
+    const cfStgBucket = new s3.Bucket(this, cfStgBucketName, {
+      bucketName: cfStgBucketName,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      accessControl: s3.BucketAccessControl.PRIVATE,
+      versioned: false,
+      publicReadAccess: false,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
+    
+    const cfProdBucketName = buildConfig.Prefix + "-cf-prod"
+
+    const cfProdBucket = new s3.Bucket(this, cfProdBucketName, {
+      bucketName: cfProdBucketName,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      accessControl: s3.BucketAccessControl.PRIVATE,
+      versioned: false,
+      publicReadAccess: false,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
     
     
     // Stack outputs
@@ -340,10 +332,20 @@ export class BaseInfrastructureStack extends cdk.Stack {
     new cdk.CfnOutput(this, exportName, { value: prodPublicUploadBucket.bucketArn, exportName }); 
 
 
-    exportName = buildConfig.Prefix + "-deploy-name" 
-    new cdk.CfnOutput(this, exportName, { value: deployBucket.bucketName, exportName }); 
-    exportName = buildConfig.Prefix + "-deploy-arn" 
-    new cdk.CfnOutput(this, exportName, { value: deployBucket.bucketArn, exportName }); 
-  
+    exportName = buildConfig.Prefix + "-cd-bucket-dev-name" 
+    new cdk.CfnOutput(this, exportName, { value: cfDevBucket.bucketName, exportName }); 
+    exportName = buildConfig.Prefix + "-cd-bucket-dev-arn" 
+    new cdk.CfnOutput(this, exportName, { value: cfDevBucket.bucketArn, exportName }); 
+
+    exportName = buildConfig.Prefix + "-cd-bucket-stg-name" 
+    new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketName, exportName }); 
+    exportName = buildConfig.Prefix + "-cd-bucket-dev-arn" 
+    new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketArn, exportName }); 
+
+    exportName = buildConfig.Prefix + "-cd-bucket-dev-name" 
+    new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketName, exportName }); 
+    exportName = buildConfig.Prefix + "-cd-bucket-dev-arn" 
+    new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketArn, exportName }); 
+
   }
 }

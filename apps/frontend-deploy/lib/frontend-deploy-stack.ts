@@ -21,42 +21,21 @@ export class FrontendDeployStack extends cdk.Stack {
         domainName: buildConfig.DomainName
       })
   
-  
+
       const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
-      const importBkt = cdk.Fn.importValue(buildConfig.Prefix + "-deploy-arn");
+      const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-dev-arn");
+      const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-stg-arn");
+      const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-prod-arn");
   
-      const deployBucket = s3.Bucket.fromBucketArn(this, "DeployBucket", importBkt);
+      const cfDevBkt = s3.Bucket.fromBucketArn(this, "DeployBucket", cfDevBktArn);
+      const cfStgBkt = s3.Bucket.fromBucketArn(this, "DeployBucket", cfStgBktArn);
+      const cfProdBkt = s3.Bucket.fromBucketArn(this, "DeployBucket", cfProdBktArn);
   
       const cert = cm.Certificate.fromCertificateArn(
         this,
         "Certificate",
         buildConfig.CertificateARN
       );
-
-
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log('importCert 👉', importCert.toString());
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log('importBkt 👉', importBkt.toString());
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log('cert 👉', cert.certificateArn);
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log ('###############################################')
-      console.log ('###############################################')
-  
-      // 👇 define GET todos function
-      // const htmlMapperFn = new lambda.Function(this, 'html-mapper-dev', {
-      //   // functionName: 'html-mapper-dev', 
-      //   runtime: lambda.Runtime.NODEJS_16_X,
-      //   handler: 'index.handler',
-      //   code: lambda.Code.fromAsset(path.join(__dirname, '/src/html-mapper-fn')),
-      // });
   
       const htmlMapperFn = new cloudfront.Function(
         this,
@@ -78,40 +57,40 @@ export class FrontendDeployStack extends cdk.Stack {
 
 
 
-      const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
-        bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
-        // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-        // removalPolicy: cdk.RemovalPolicy.DESTROY,
-        // autoDeleteObjects: true,
-        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
+      // const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
+      //   bucketName: `poo-poo-poo-poo-poo-poo-poo-poo-poo`,
+      //   // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      //   // removalPolicy: cdk.RemovalPolicy.DESTROY,
+      //   // autoDeleteObjects: true,
+      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+      //   autoDeleteObjects: true,
 
-        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-        accessControl: s3.BucketAccessControl.PRIVATE,
-        versioned: false,
-        publicReadAccess: false,
-        encryption: s3.BucketEncryption.S3_MANAGED,
-      });
+      //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      //   accessControl: s3.BucketAccessControl.PRIVATE,
+      //   versioned: false,
+      //   publicReadAccess: false,
+      //   encryption: s3.BucketEncryption.S3_MANAGED,
+      // });
 
 
 
     // Deployment bucket
-    const depBucketName = buildConfig.Prefix + "-dep"
+    // const depBucketName = buildConfig.Prefix + "-dep"
     
-    const depBucket = new s3.Bucket(this, depBucketName, {
-      bucketName: depBucketName,
+    // const depBucket = new s3.Bucket(this, depBucketName, {
+    //   bucketName: depBucketName,
 
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
+    //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    //   autoDeleteObjects: true,
 
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      accessControl: s3.BucketAccessControl.PRIVATE,
-      versioned: false,
-      publicReadAccess: false,
-      encryption: s3.BucketEncryption.S3_MANAGED,
-    });
+    //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+    //   accessControl: s3.BucketAccessControl.PRIVATE,
+    //   versioned: false,
+    //   publicReadAccess: false,
+    //   encryption: s3.BucketEncryption.S3_MANAGED,
+    // });
 
 
       const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
@@ -125,7 +104,7 @@ export class FrontendDeployStack extends cdk.Stack {
 
       const sf = new cloudfront.Distribution(this, 'Distribution', {
         defaultBehavior: {
-          origin: new origins.S3Origin(depBucket, {
+          origin: new origins.S3Origin(cfDevBkt, {
             originAccessIdentity: originAccessIdentity
           }),
           viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -156,21 +135,38 @@ export class FrontendDeployStack extends cdk.Stack {
           },
         ],
       });
+
+      const policy = new iam.PolicyStatement({
+        actions: ["s3:GetObject"],
+        resources: [cfDevBktArn + '/*'],
+        principals: [
+            new iam.ServicePrincipal('cloudfront.amazonaws.com')
+        ],
+        conditions: [
+            {
+                "StringEquals": {
+                    "AWS:SourceArn": sf
+                }
+            }
+        ]
+    });
+
+    cfDevBkt.addToResourcePolicy(policy);
   
-      const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
-        zone: hostedZone,
-        recordName: 'dev.'+buildConfig.DomainName,
-        target: cdk.aws_route53.RecordTarget.fromAlias(
-          new cdk.aws_route53_targets.CloudFrontTarget(sf)
-        ),
-      });
+    const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+      zone: hostedZone,
+      recordName: 'dev.'+buildConfig.DomainName,
+      target: cdk.aws_route53.RecordTarget.fromAlias(
+        new cdk.aws_route53_targets.CloudFrontTarget(sf)
+      ),
+    });
   
-      new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
-        sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: depBucket,
-        distribution: sf,
-        distributionPaths: ['/*'],
-      });
+    new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
+      sources: [s3deploy.Source.asset('../frontend/out')],
+      destinationBucket: cfDevBkt,
+      distribution: sf,
+      distributionPaths: ['/*'],
+    });
 
       // const originAccessIdentity2 = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity2', {
       //   comment: `OAI for ${buildConfig.DomainName} 2`,
