@@ -83,6 +83,8 @@ const setCloudfrontHostingBucketProps = (bucketName: string ) => {
  */
 export const createBucket = (scope: Stack, bucketType: BucketType, bucketName: string, buildConfig: BuildConfig) => {
 
+console.log (`Create bucket - ${bucketName}`)
+
     let bucketProps: S3.BucketProps = { };
 
     switch (bucketType) {
