@@ -144,18 +144,18 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     const cfTarget = new cdk.aws_route53_targets.CloudFrontTarget(sf)
 
-    // const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
-    //   zone: hostedZone,
-    //   recordName: 'dev.'+buildConfig.DomainName,
-    //   target: cdk.aws_route53.RecordTarget.fromAlias( cfTarget ),
-    // });
+    const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+      zone: hostedZone,
+      recordName: 'dev.'+buildConfig.DomainName,
+      target: cdk.aws_route53.RecordTarget.fromAlias( cfTarget ),
+    });
 
-    // new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
-    //   sources: [s3deploy.Source.asset('../frontend/out')],
-    //   destinationBucket: cfDevBucket,
-    //   distribution: sf,
-    //   distributionPaths: ['/*'],
-    // });
+    new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
+      sources: [s3deploy.Source.asset('../frontend/out')],
+      destinationBucket: cfDevBucket,
+      distribution: sf,
+      distributionPaths: ['/*'],
+    });
 
     // Stack outputs
     // - Certificate ARN
