@@ -57,7 +57,7 @@ export const createCloudfront = (scope: Stack, buildConfig: BuildConfig, env: 'd
     const cf = new cloudfront.Distribution(scope, `${longEnv} Distribution`, {
         defaultBehavior: {
             origin: new origins.S3Origin(bkt, {
-                originAccessIdentity: new cloudfront.OriginAccessIdentity(scope, '${longEnv} OriginAccessIdentity', {
+                originAccessIdentity: new cloudfront.OriginAccessIdentity(scope, `${longEnv} OriginAccessIdentity`, {
                     comment: `OAI for ${env}.${buildConfig.DomainName}`,
                 })
             }),
