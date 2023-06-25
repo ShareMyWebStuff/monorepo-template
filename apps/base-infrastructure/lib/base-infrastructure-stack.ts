@@ -216,20 +216,20 @@ export class BaseInfrastructureStack extends cdk.Stack {
     // new cdk.CfnOutput(this, exportName, { value: prodPublicUploadBucket.bucketArn, exportName }); 
 
 
-    // exportName = buildConfig.Prefix + "-cd-bucket-dev-name" 
-    // new cdk.CfnOutput(this, exportName, { value: cfDevBucket.bucketName, exportName }); 
-    // exportName = buildConfig.Prefix + "-cd-bucket-dev-arn" 
-    // new cdk.CfnOutput(this, exportName, { value: cfDevBucket.bucketArn, exportName }); 
+    exportName = buildConfig.Prefix + "-cf-bucket-dev-name" 
+    new cdk.CfnOutput(this, exportName, { value: cfDevBucket.bucketName, exportName }); 
+    exportName = buildConfig.Prefix + "-cf-bucket-dev-arn" 
+    new cdk.CfnOutput(this, exportName, { value: cfDevBucket.bucketArn, exportName }); 
 
-    // exportName = buildConfig.Prefix + "-cd-bucket-stg-name" 
-    // new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketName, exportName }); 
-    // exportName = buildConfig.Prefix + "-cd-bucket-stg-arn" 
-    // new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketArn, exportName }); 
+    exportName = buildConfig.Prefix + "-cf-bucket-stg-name" 
+    new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketName, exportName }); 
+    exportName = buildConfig.Prefix + "-cf-bucket-stg-arn" 
+    new cdk.CfnOutput(this, exportName, { value: cfStgBucket.bucketArn, exportName }); 
 
-    // exportName = buildConfig.Prefix + "-cd-bucket-prod-name" 
-    // new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketName, exportName }); 
-    // exportName = buildConfig.Prefix + "-cd-bucket-prod-arn" 
-    // new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketArn, exportName }); 
+    exportName = buildConfig.Prefix + "-cf-bucket-prod-name" 
+    new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketName, exportName }); 
+    exportName = buildConfig.Prefix + "-cf-bucket-prod-arn" 
+    new cdk.CfnOutput(this, exportName, { value: cfProdBucket.bucketArn, exportName }); 
 
   }
 }

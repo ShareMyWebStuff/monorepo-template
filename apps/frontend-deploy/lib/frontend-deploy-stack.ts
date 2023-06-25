@@ -129,9 +129,9 @@ export class FrontendDeployStack extends cdk.Stack {
 
       const cfDistId = cdk.Fn.importValue(buildConfig.Prefix + "-cf-dist-id");
 
-      const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-dev-arn");
-      const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-stg-arn");
-      const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-prod-arn");
+      const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-dev-arn");
+      const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-stg-arn");
+      const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-prod-arn");
   
       const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
       const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
