@@ -104,14 +104,106 @@ export class BaseInfrastructureStack extends cdk.Stack {
       }
     )
 
-    const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
+    const devOAI = new cloudfront.OriginAccessIdentity(this, 'Development OriginAccessIdentity', {
+      comment: `OAI for dev.${buildConfig.DomainName}`,
+    });
+
+    const cfDevDist = new cloudfront.Distribution(this, 'Development Distribution', {
+      defaultBehavior: {
+        origin: new origins.S3Origin(cfDevBucket, {
+          originAccessIdentity: devOAI
+        }),
+        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        functionAssociations: [
+          {
+            function: htmlMapperFn,
+            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          },
+        ],
+      },
+      domainNames: [`dev.${buildConfig.DomainName}`],
+      certificate: cert,
+      minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+      httpVersion: cloudfront.HttpVersion.HTTP2,
+      enableIpv6: true,
+      defaultRootObject: 'index.html',
+      errorResponses: [
+        // {
+        //   httpStatus: 403,
+        //   responsePagePath: '/index.html',
+        //   responseHttpStatus: 200,
+        //   ttl: cdk.Duration.minutes(0),
+        // },
+        {
+          httpStatus: 404,
+          responseHttpStatus: 404,
+          responsePagePath: '/404.html',
+        },
+      ],
+    });
+
+    const cfDevTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfDevDist);
+
+    new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+      zone: hostedZone,
+      recordName: 'dev.'+buildConfig.DomainName,
+      target: cdk.aws_route53.RecordTarget.fromAlias( cfDevTarget ),
+    });
+
+    const stgOAI = new cloudfront.OriginAccessIdentity(this, 'Staging OriginAccessIdentity', {
+      comment: `OAI for stg.${buildConfig.DomainName}`,
+    });
+
+    const cfStgDist = new cloudfront.Distribution(this, 'Staging Distribution', {
+      defaultBehavior: {
+        origin: new origins.S3Origin(cfStgBucket, {
+          originAccessIdentity: stgOAI
+        }),
+        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        functionAssociations: [
+          {
+            function: htmlMapperFn,
+            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          },
+        ],
+      },
+      domainNames: [`stg.${buildConfig.DomainName}`],
+      certificate: cert,
+      minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+      httpVersion: cloudfront.HttpVersion.HTTP2,
+      enableIpv6: true,
+      defaultRootObject: 'index.html',
+      errorResponses: [
+        // {
+        //   httpStatus: 403,
+        //   responsePagePath: '/index.html',
+        //   responseHttpStatus: 200,
+        //   ttl: cdk.Duration.minutes(0),
+        // },
+        {
+          httpStatus: 404,
+          responseHttpStatus: 404,
+          responsePagePath: '/404.html',
+        },
+      ],
+    });
+
+    const cfStgTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfStgDist);
+
+    new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+      zone: hostedZone,
+      recordName: 'stg.'+buildConfig.DomainName,
+      target: cdk.aws_route53.RecordTarget.fromAlias( cfStgTarget ),
+    });
+
+    const prodOAI = new cloudfront.OriginAccessIdentity(this, 'Production OriginAccessIdentity', {
       comment: `OAI for ${buildConfig.DomainName}`,
     });
 
-    const cfDist = new cloudfront.Distribution(this, 'Distribution', {
+    const cfProdDist = new cloudfront.Distribution(this, 'Production Distribution', {
       defaultBehavior: {
-        origin: new origins.S3Origin(cfDevBucket, {
-          originAccessIdentity: originAccessIdentity
+        origin: new origins.S3Origin(cfStgBucket, {
+          originAccessIdentity: stgOAI
         }),
         viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         functionAssociations: [
@@ -142,14 +234,14 @@ export class BaseInfrastructureStack extends cdk.Stack {
       ],
     });
 
-    const cfTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfDist);
+    const cfProdTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfProdDist);
 
-
-    const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+    new cdk.aws_route53.ARecord(this, 'AliasRecord', {
       zone: hostedZone,
-      recordName: 'dev.'+buildConfig.DomainName,
-      target: cdk.aws_route53.RecordTarget.fromAlias( cfTarget ),
+      recordName: buildConfig.DomainName,
+      target: cdk.aws_route53.RecordTarget.fromAlias( cfProdTarget ),
     });
+
 
     // new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
     //   sources: [s3deploy.Source.asset('../frontend/out')],
@@ -164,10 +256,20 @@ export class BaseInfrastructureStack extends cdk.Stack {
     new cdk.CfnOutput(this, exportName, { value: certificate.certificateArn, exportName }); 
 
     // Cloudfront distributuion
-    exportName = buildConfig.Prefix + '-cf-dist-id'
-    new cdk.CfnOutput(this, exportName, { value: cfDist.distributionId, exportName });
-    exportName = buildConfig.Prefix + '-cf-dist-domain-name'
-    new cdk.CfnOutput(this, exportName, { value: cfDist.distributionDomainName, exportName });
+    exportName = buildConfig.Prefix + '-cf-dev-dist-id'
+    new cdk.CfnOutput(this, exportName, { value: cfDevDist.distributionId, exportName });
+    exportName = buildConfig.Prefix + '-cf-dev-dist-domain-name'
+    new cdk.CfnOutput(this, exportName, { value: cfDevDist.distributionDomainName, exportName });
+
+    exportName = buildConfig.Prefix + '-cf-stg-dist-id'
+    new cdk.CfnOutput(this, exportName, { value: cfStgDist.distributionId, exportName });
+    exportName = buildConfig.Prefix + '-cf-stg-dist-domain-name'
+    new cdk.CfnOutput(this, exportName, { value: cfStgDist.distributionDomainName, exportName });
+
+    exportName = buildConfig.Prefix + '-cf-prd-dist-id'
+    new cdk.CfnOutput(this, exportName, { value: cfProdDist.distributionId, exportName });
+    exportName = buildConfig.Prefix + '-cf-prd-dist-domain-name'
+    new cdk.CfnOutput(this, exportName, { value: cfProdDist.distributionDomainName, exportName });
 
     // // // - Api Dev Domain
     // exportName = buildConfig.Prefix + '-dev-api-domain'
