@@ -13,7 +13,7 @@ import {BuildConfig} from '../lib/build-config'
  */
 export const setRoute53Alias = (scope: Stack, buildConfig: BuildConfig, subDomain: string, aliasRec: IAliasRecordTarget ) => {
 
-    return new ARecord(scope, 'Dev Alias Cloudfront', {
+    return new ARecord(scope, `${subDomain} Alias Cloudfront`, {
         zone: buildConfig.hostedZone!,
         recordName: (!subDomain ? '' :  subDomain + '.' ) + buildConfig.DomainName,
         target: RecordTarget.fromAlias( aliasRec ),
