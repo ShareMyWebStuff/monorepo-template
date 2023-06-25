@@ -74,11 +74,11 @@ export class BaseInfrastructureStack extends cdk.Stack {
     const devPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-dev-upload-private", buildConfig )
 
     const stgPublicUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-stg-upload", buildConfig )
-    // const stgPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-stg-upload-private", buildConfig )
+    const stgPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-stg-upload-private", buildConfig )
 
 
-    // const prodPublicUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload", buildConfig )
-    // const prodPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload-private", buildConfig )
+    const prodPublicUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload", buildConfig )
+    const prodPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload-private", buildConfig )
 
     // // Deployment bucket
     // const cfDevBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-dev", buildConfig )
