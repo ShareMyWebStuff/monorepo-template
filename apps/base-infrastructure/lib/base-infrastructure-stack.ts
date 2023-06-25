@@ -135,12 +135,12 @@ export class BaseInfrastructureStack extends cdk.Stack {
       ],
     });
 
+    const cfTarget = new cdk.aws_route53_targets.CloudFrontTarget(sf)
+
     // const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
     //   zone: hostedZone,
     //   recordName: 'dev.'+buildConfig.DomainName,
-    //   target: cdk.aws_route53.RecordTarget.fromAlias(
-    //     new cdk.aws_route53_targets.CloudFrontTarget(sf)
-    //   ),
+    //   target: cdk.aws_route53.RecordTarget.fromAlias( cfTarget ),
     // });
 
     // new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
