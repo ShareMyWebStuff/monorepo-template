@@ -80,10 +80,10 @@ export class BaseInfrastructureStack extends cdk.Stack {
     const prodPublicUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload", buildConfig )
     const prodPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload-private", buildConfig )
 
-    // // Deployment bucket
-    // const cfDevBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-dev", buildConfig )
-    // const cfStgBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-stg", buildConfig )
-    // const cfProdBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-prod", buildConfig )
+    // Deployment bucket
+    const cfDevBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-dev", buildConfig )
+    const cfStgBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-stg", buildConfig )
+    const cfProdBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-prod", buildConfig )
 
     // // Create cloudfront function
     // const htmlMapperFn = new cloudfront.Function(
