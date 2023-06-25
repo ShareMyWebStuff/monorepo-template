@@ -85,55 +85,55 @@ export class BaseInfrastructureStack extends cdk.Stack {
     const cfStgBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-stg", buildConfig )
     const cfProdBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-prod", buildConfig )
 
-    // // Create cloudfront function
-    // const htmlMapperFn = new cloudfront.Function(
-    //   this,
-    //   'html-mapper-dev-fn',
-    //   {
-    //     functionName: 'html-mapper-dev-dev',
-    //     code: cdk.aws_cloudfront.FunctionCode.fromFile({
-    //       filePath: path.join(__dirname, '../dist/lib/src/html-mapper-fn/index.js'),
-    //     }),
-    //   }
-    // )
+    // Create cloudfront function
+    const htmlMapperFn = new cloudfront.Function(
+      this,
+      'html-mapper-dev-fn',
+      {
+        functionName: 'html-mapper-dev-dev',
+        code: cdk.aws_cloudfront.FunctionCode.fromFile({
+          filePath: path.join(__dirname, '../dist/lib/src/html-mapper-fn/index.js'),
+        }),
+      }
+    )
 
-    // const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
-    //   comment: `OAI for ${buildConfig.DomainName}`,
-    // });
+    const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
+      comment: `OAI for ${buildConfig.DomainName}`,
+    });
 
-    // const sf = new cloudfront.Distribution(this, 'Distribution', {
-    //   defaultBehavior: {
-    //     origin: new origins.S3Origin(cfDevBucket, {
-    //       originAccessIdentity: originAccessIdentity
-    //     }),
-    //     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    //     functionAssociations: [
-    //       {
-    //         function: htmlMapperFn,
-    //         eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-    //       },
-    //     ],
-    //   },
-    //   domainNames: [`dev.${buildConfig.DomainName}`],
-    //   certificate,
-    //   minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-    //   httpVersion: cloudfront.HttpVersion.HTTP2,
-    //   enableIpv6: true,
-    //   defaultRootObject: 'index.html',
-    //   errorResponses: [
-    //     // {
-    //     //   httpStatus: 403,
-    //     //   responsePagePath: '/index.html',
-    //     //   responseHttpStatus: 200,
-    //     //   ttl: cdk.Duration.minutes(0),
-    //     // },
-    //     {
-    //       httpStatus: 404,
-    //       responseHttpStatus: 404,
-    //       responsePagePath: '/404.html',
-    //     },
-    //   ],
-    // });
+    const sf = new cloudfront.Distribution(this, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.S3Origin(cfDevBucket, {
+          originAccessIdentity: originAccessIdentity
+        }),
+        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        functionAssociations: [
+          {
+            function: htmlMapperFn,
+            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          },
+        ],
+      },
+      domainNames: [`dev.${buildConfig.DomainName}`],
+      certificate,
+      minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+      httpVersion: cloudfront.HttpVersion.HTTP2,
+      enableIpv6: true,
+      defaultRootObject: 'index.html',
+      errorResponses: [
+        // {
+        //   httpStatus: 403,
+        //   responsePagePath: '/index.html',
+        //   responseHttpStatus: 200,
+        //   ttl: cdk.Duration.minutes(0),
+        // },
+        {
+          httpStatus: 404,
+          responseHttpStatus: 404,
+          responsePagePath: '/404.html',
+        },
+      ],
+    });
 
     // const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
     //   zone: hostedZone,
