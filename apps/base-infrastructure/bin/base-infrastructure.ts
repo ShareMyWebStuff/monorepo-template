@@ -40,6 +40,11 @@ const getConfig = () => {
   console.log (JSON.stringify(unparsedEnv))
 
   let buildConfig: BuildConfig = {
+    hostedZone: null,
+    cloudfrontCert: null,
+    cfDevBucket: null,
+    cfStgBucket: null,
+    cfPrdBucket: null,
     CertificateARN: ensureString(unparsedEnv as object, 'CertificateARN'),
     RunSetup: (!setup ? false: true),
     Environment: env,
