@@ -127,7 +127,7 @@ export class FrontendDeployStack extends cdk.Stack {
     //   });
 
 
-      const cfDistId = cdk.Fn.importValue(buildConfig.Prefix + "-cf-dist-id");
+      const cfDistId = cdk.Fn.importValue(buildConfig.Prefix + "-cf-dev");
 
       const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-dev-arn");
       const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-stg-arn");
