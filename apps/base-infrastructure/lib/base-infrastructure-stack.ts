@@ -17,10 +17,10 @@ export class BaseInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     // Get the hosted zone
-    const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
-      domainName: buildConfig.DomainName
-    })
-    buildConfig.hostedZone = HostedZone.fromLookup(this, "HostedZone", {
+    // const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
+    //   domainName: buildConfig.DomainName
+    // })
+    buildConfig.hostedZone = HostedZone.fromLookup(this, "HostedZone lookup", {
       domainName: buildConfig.DomainName
     })
 
@@ -36,7 +36,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
       certificateName: buildConfig.Prefix + '-certificate',
       domainName: buildConfig.DomainName,
       subjectAlternativeNames: [`*.${buildConfig.DomainName}`],
-      validation: cm.CertificateValidation.fromDns(hostedZone),
+      validation: cm.CertificateValidation.fromDns(buildConfig.hostedZone),
     })
 
 
@@ -63,19 +63,19 @@ export class BaseInfrastructureStack extends cdk.Stack {
     })
     
     const devApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-dev-route53', {
-      zone: hostedZone,
+      zone: buildConfig.hostedZone,
       recordName: 'api-dev.' + buildConfig.DomainName, // devApiDomain.domainName,
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(devApiDomain))
     })
     
     const stgApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-stg-route53', {
-      zone: hostedZone,
+      zone: buildConfig.hostedZone,
       recordName: 'api-stg.' + buildConfig.DomainName, // stgApiDomain.domainName,
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(stgApiDomain))
     })
     
     const prodApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-prod-route53', {
-      zone: hostedZone,
+      zone: buildConfig.hostedZone,
       recordName: 'api.' + buildConfig.DomainName, // prodApiDomain.domainName,
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(prodApiDomain))
     })
