@@ -20,6 +20,13 @@ export class BaseInfrastructureStack extends cdk.Stack {
       domainName: buildConfig.DomainName
     })
 
+    // The us-east-1 certificate
+    const cert = cm.Certificate.fromCertificateArn(
+      this,
+      "Certificate",
+      buildConfig.CertificateARN
+    );
+
     // Create the certificate
     const certificate = new cm.Certificate (this, "Certificate", {
       certificateName: buildConfig.Prefix + '-certificate',
@@ -115,7 +122,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
         ],
       },
       domainNames: [`dev.${buildConfig.DomainName}`],
-      certificate,
+      certificate: cert,
       minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
       httpVersion: cloudfront.HttpVersion.HTTP2,
       enableIpv6: true,
