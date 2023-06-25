@@ -92,7 +92,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
       {
         functionName: 'html-mapper-dev-dev',
         code: cdk.aws_cloudfront.FunctionCode.fromFile({
-          filePath: path.join(__dirname, '../dist/lib/src/html-mapper-fn/index.js'),
+          filePath: path.join(__dirname, '../dist/src/html-mapper-fn/index.js'),
         }),
       }
     )
