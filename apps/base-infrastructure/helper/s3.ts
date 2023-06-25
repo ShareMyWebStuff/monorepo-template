@@ -103,7 +103,7 @@ console.log (`Create bucket - ${bucketName}`)
         bucket.grantRead(new iam.AnyPrincipal());
     }
 
-    return new S3.Bucket(scope, bucketName, bucketProps);
+    return bucket;
 
 }
 
