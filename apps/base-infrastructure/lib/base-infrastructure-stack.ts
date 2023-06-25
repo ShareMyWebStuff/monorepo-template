@@ -121,7 +121,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
           },
         ],
       },
-      domainNames: [`dev.${buildConfig.DomainName}`],
+      domainNames: [`${buildConfig.DomainName}`],
       certificate: cert,
       minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
       httpVersion: cloudfront.HttpVersion.HTTP2,
@@ -142,7 +142,8 @@ export class BaseInfrastructureStack extends cdk.Stack {
       ],
     });
 
-    const cfTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfDist)
+    const cfTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfDist);
+
 
     const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
       zone: hostedZone,
