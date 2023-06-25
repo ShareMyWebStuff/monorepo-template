@@ -23,7 +23,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
     // The us-east-1 certificate
     const cert = cm.Certificate.fromCertificateArn(
       this,
-      "Certificate",
+      "Cloudfront Certificate",
       buildConfig.CertificateARN
     );
 
