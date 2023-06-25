@@ -64,7 +64,7 @@ export const createCloudfront = (scope: Stack, buildConfig: BuildConfig, env: 'd
             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             functionAssociations: [
                 {
-                    function: createCloudfrontFn(scope, `html-mapper-${env}-fn`, '../dist/lib/src/html-mapper-fn/index.js'),
+                    function: createCloudfrontFn(scope, `html-mapper-${env}-fn`, '../dist/src/html-mapper-fn/index.js'),
                     eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
                 },
             ],
