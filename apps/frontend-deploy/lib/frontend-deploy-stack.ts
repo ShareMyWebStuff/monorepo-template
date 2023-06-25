@@ -101,22 +101,22 @@ export class FrontendDeployStack extends cdk.Stack {
         ],
       });
 
-    //   const policy = new iam.PolicyStatement({
-    //     actions: ["s3:GetObject"],
-    //     resources: [depBucket.bucketArn + "/*"],
-    //     principals: [
-    //         new iam.ServicePrincipal('cloudfront.amazonaws.com')
-    //     ],
-    //     conditions: [
-    //         {
-    //             "StringEquals": {
-    //                 "AWS:SourceArn": sf
-    //             }
-    //         }
-    //     ]
-    // });
+      const policy = new iam.PolicyStatement({
+        actions: ["s3:GetObject"],
+        resources: [cfDevBktArn + "/*"],
+        principals: [
+            new iam.ServicePrincipal('cloudfront.amazonaws.com')
+        ],
+        conditions: [
+            {
+                "StringEquals": {
+                    "AWS:SourceArn": sf
+                }
+            }
+        ]
+    });
 
-    // depBucket.addToResourcePolicy(policy);
+    cfDevBkt.addToResourcePolicy(policy);
   
       const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
         zone: hostedZone,
