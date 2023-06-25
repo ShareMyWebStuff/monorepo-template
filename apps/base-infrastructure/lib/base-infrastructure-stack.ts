@@ -225,7 +225,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
             s3.HttpMethods.PUT,
             s3.HttpMethods.DELETE,
           ],
-          // Thhis can be made later to use localhost
+          // This can be made later to use localhost
           allowedOrigins: [buildConfig.CorsServer, `https://${buildConfig.DomainName}`],
           // allowedOrigins: ['http://localhost:3000'],
           allowedHeaders: ['*'],
