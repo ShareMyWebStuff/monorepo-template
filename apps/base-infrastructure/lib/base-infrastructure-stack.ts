@@ -144,7 +144,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     const cfDevTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfDevDist);
 
-    new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+    new cdk.aws_route53.ARecord(this, 'Dev Alias Cloudfront', {
       zone: hostedZone,
       recordName: 'dev.'+buildConfig.DomainName,
       target: cdk.aws_route53.RecordTarget.fromAlias( cfDevTarget ),
@@ -190,7 +190,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     const cfStgTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfStgDist);
 
-    new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+    new cdk.aws_route53.ARecord(this, 'Staging Alias Cloudfront', {
       zone: hostedZone,
       recordName: 'stg.'+buildConfig.DomainName,
       target: cdk.aws_route53.RecordTarget.fromAlias( cfStgTarget ),
@@ -236,7 +236,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
 
     const cfProdTarget = new cdk.aws_route53_targets.CloudFrontTarget(cfProdDist);
 
-    new cdk.aws_route53.ARecord(this, 'AliasRecord', {
+    new cdk.aws_route53.ARecord(this, 'Production Alias Cloudfront', {
       zone: hostedZone,
       recordName: buildConfig.DomainName,
       target: cdk.aws_route53.RecordTarget.fromAlias( cfProdTarget ),
