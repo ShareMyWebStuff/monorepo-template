@@ -40,7 +40,7 @@ jobs:
         run: |
             cd apps/frontend-deploy
             yarn build
-            cdk deploy -c env=dev --require-approval never
+            cdk deploy -c env=${{ github.event.inputs.environment }} --require-approval never
             
     #   - name: Copy files to the test website with the AWS CLI
     #     run: |
