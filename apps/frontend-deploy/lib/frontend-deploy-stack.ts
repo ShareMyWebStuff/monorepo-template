@@ -16,135 +16,28 @@ export class FrontendDeployStack extends cdk.Stack {
   constructor(scope: Construct, id: string, buildConfig: BuildConfig, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    //   // Get the hosted zone
-    //   const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
-    //     domainName: buildConfig.DomainName
-    //   })
+    const cfDistId = cdk.Fn.importValue(buildConfig.Prefix + `-cf-${buildConfig.Environment}-dist-id`);
+
+    const cfBktArn = cdk.Fn.importValue(buildConfig.Prefix + `-cf-bucket-${buildConfig.Environment}-arn`);
+
+    const cfBkt = s3.Bucket.fromBucketArn(this, `cf${buildConfig.Environment}BktArn`, cfBktArn);
+
+      // const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-dev-arn");
+      // const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-stg-arn");
+      // const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-prod-arn");
   
-    //   const importCert = cdk.Fn.importValue(buildConfig.Prefix + "-cert-arn");
-    //   // const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-dev-arn");
-    //   const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-stg-arn");
-    //   const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cd-bucket-prod-arn");
-  
-    //   // const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
-    //   const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
-    //   const cfProdBkt = s3.Bucket.fromBucketArn(this, "cfProdBktArn", cfProdBktArn);
+      // const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
+      // const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
+      // const cfProdBkt = s3.Bucket.fromBucketArn(this, "cfProdBktArn", cfProdBktArn);
 
-    //   const cert = cm.Certificate.fromCertificateArn(
-    //     this,
-    //     "Certificate",
-    //     buildConfig.CertificateARN
-    //   );
-
-    //   const htmlMapperFn = new cloudfront.Function(
-    //     this,
-    //     'html-mapper-dev-fn',
-    //     {
-    //       functionName: 'html-mapper-dev-dev',
-    //       code: cdk.aws_cloudfront.FunctionCode.fromFile({
-    //         filePath: path.join(__dirname, '../dist/lib/src/html-mapper-fn/index.js'),
-    //       }),
-    //     }
-    //   )
-
-
-    //   // Deployment bucket
-    //   const depBucketName = buildConfig.Prefix + "-dep"
-    
-    //   const cfDevBkt = new s3.Bucket(this, depBucketName, {
-    //     bucketName: depBucketName,
-    //     blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-    //     removalPolicy: cdk.RemovalPolicy.DESTROY,
-    //     autoDeleteObjects: true,
-    //     objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-    //     accessControl: s3.BucketAccessControl.PRIVATE,
-    //     versioned: false,
-    //     publicReadAccess: false,
-    //     encryption: s3.BucketEncryption.S3_MANAGED,
-    //   });
-
-    //   const originAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'OriginAccessIdentity', {
-    //     comment: `OAI for ${buildConfig.DomainName}`,
-    //   });
-
-    //   const sf = new cloudfront.Distribution(this, 'Distribution', {
-    //     defaultBehavior: {
-    //       origin: new origins.S3Origin(cfDevBkt, {
-    //         originAccessIdentity: originAccessIdentity
-    //       }),
-    //       viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    //       functionAssociations: [
-    //         {
-    //           function: htmlMapperFn,
-    //           eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-    //         },
-    //       ],
-    //     },
-    //     domainNames: [`dev.${buildConfig.DomainName}`],
-    //     certificate: cert,
-    //     minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-    //     httpVersion: cloudfront.HttpVersion.HTTP2,
-    //     enableIpv6: true,
-    //     defaultRootObject: 'index.html',
-    //     errorResponses: [
-    //       // {
-    //       //   httpStatus: 403,
-    //       //   responsePagePath: '/index.html',
-    //       //   responseHttpStatus: 200,
-    //       //   ttl: cdk.Duration.minutes(0),
-    //       // },
-    //       {
-    //         httpStatus: 404,
-    //         responseHttpStatus: 404,
-    //         responsePagePath: '/404.html',
-    //       },
-    //     ],
-    //   });
-
-    // //   const policy = new iam.PolicyStatement({
-    // //     actions: ["s3:GetObject"],
-    // //     resources: [cfDevBkt.bucketArn + "/*"],
-    // //     principals: [
-    // //         new iam.ServicePrincipal('cloudfront.amazonaws.com')
-    // //     ],
-    // //     conditions: [
-    // //         {
-    // //             "StringEquals": {
-    // //                 "AWS:SourceArn": sf
-    // //             }
-    // //         }
-    // //     ]
-    // // });
-
-    // // cfDevBkt.addToResourcePolicy(policy);
-  
-    //   const cfRecord = new cdk.aws_route53.ARecord(this, 'AliasRecord', {
-    //     zone: hostedZone,
-    //     recordName: 'dev.'+buildConfig.DomainName,
-    //     target: cdk.aws_route53.RecordTarget.fromAlias(
-    //       new cdk.aws_route53_targets.CloudFrontTarget(sf)
-    //     ),
-    //   });
-
-
-      const cfDistId = cdk.Fn.importValue(buildConfig.Prefix + "-cf-dev-dist-id");
-
-      const cfDevBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-dev-arn");
-      const cfStgBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-stg-arn");
-      const cfProdBktArn = cdk.Fn.importValue(buildConfig.Prefix + "-cf-bucket-prod-arn");
-  
-      const cfDevBkt = s3.Bucket.fromBucketArn(this, "cfDevBktArn", cfDevBktArn);
-      const cfStgBkt = s3.Bucket.fromBucketArn(this, "cfStgBktArn", cfStgBktArn);
-      const cfProdBkt = s3.Bucket.fromBucketArn(this, "cfProdBktArn", cfProdBktArn);
-
-      const cdDistId = cloudfront.Distribution.fromDistributionAttributes(this, 'cdDistId', {
+      const cdDistId = cloudfront.Distribution.fromDistributionAttributes(this, `cd${buildConfig.Environment}DistId`, {
         distributionId: cfDistId,
         domainName: buildConfig.DomainName,
       })
 
-      new s3deploy.BucketDeployment(this, 'S3BucketDeploy', {
+      new s3deploy.BucketDeployment(this, `S3BucketDeploy-${buildConfig.Environment}`, {
         sources: [s3deploy.Source.asset('../frontend/out')],
-        destinationBucket: cfDevBkt,
+        destinationBucket: cfBkt,
         distribution: cdDistId,
         distributionPaths: ['/*'],
       });
