@@ -74,9 +74,9 @@ export class BaseInfrastructureStack extends cdk.Stack {
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(stgApiDomain))
     })
     
-    const prdApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-prod-route53', {
+    const prdApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-prd-route53', {
       zone: buildConfig.hostedZone,
-      recordName: 'api.' + buildConfig.DomainName, // prodApiDomain.domainName,
+      recordName: 'api.' + buildConfig.DomainName, // prdApiDomain.domainName,
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(prdApiDomain))
     })
     
