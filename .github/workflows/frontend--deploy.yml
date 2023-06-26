@@ -6,7 +6,7 @@ on:
             environment:
                 description: "Environment"
                 required: true
-                default: "dev"
+                default: "stg"
 
 jobs:
     deploy:
