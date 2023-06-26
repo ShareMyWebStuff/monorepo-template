@@ -55,7 +55,7 @@ export class BaseInfrastructureStack extends cdk.Stack {
       securityPolicy: cdk.aws_apigateway.SecurityPolicy.TLS_1_2,
     })
     
-    const prodApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix + '-domain-api-prod', {
+    const prdApiDomain = new cdk.aws_apigateway.DomainName(this, buildConfig.Prefix + '-domain-api-prd', {
       domainName: 'api.' + buildConfig.DomainName,
       certificate,
       endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
@@ -74,10 +74,10 @@ export class BaseInfrastructureStack extends cdk.Stack {
       target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(stgApiDomain))
     })
     
-    const prodApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-prod-route53', {
+    const prdApiDomainRS = new cdk.aws_route53.ARecord(this, buildConfig.Prefix + '-api-prod-route53', {
       zone: buildConfig.hostedZone,
       recordName: 'api.' + buildConfig.DomainName, // prodApiDomain.domainName,
-      target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(prodApiDomain))
+      target: cdk.aws_route53.RecordTarget.fromAlias(new ApiGatewayDomain(prdApiDomain))
     })
     
     //  Create buckets
@@ -88,13 +88,13 @@ export class BaseInfrastructureStack extends cdk.Stack {
     const stgPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-stg-upload-private", buildConfig )
 
 
-    const prodPublicUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload", buildConfig )
-    const prodPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload-private", buildConfig )
+    const prdPublicUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload", buildConfig )
+    const prdPrivateUploadBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-upload-private", buildConfig )
 
     // Deployment bucket
     buildConfig.cfDevBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-dev", buildConfig )
     buildConfig.cfStgBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-stg", buildConfig )
-    buildConfig.cfPrdBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-prod", buildConfig )
+    buildConfig.cfPrdBucket = createBucket (this, BucketType.CLOUDFRONT_HOSTING, buildConfig.Prefix + "-cf-prd", buildConfig )
 
     const cfDevDist = createCloudfront (this, buildConfig, 'dev')
     const cfStgDist = createCloudfront (this, buildConfig, 'stg')
@@ -338,9 +338,9 @@ export class BaseInfrastructureStack extends cdk.Stack {
     exportName = buildConfig.Prefix + "-cf-bucket-stg-arn" 
     new cdk.CfnOutput(this, exportName, { value: buildConfig.cfStgBucket.bucketArn, exportName }); 
 
-    exportName = buildConfig.Prefix + "-cf-bucket-prod-name" 
+    exportName = buildConfig.Prefix + "-cf-bucket-prd-name" 
     new cdk.CfnOutput(this, exportName, { value: buildConfig.cfPrdBucket.bucketName, exportName }); 
-    exportName = buildConfig.Prefix + "-cf-bucket-prod-arn" 
+    exportName = buildConfig.Prefix + "-cf-bucket-prd-arn" 
     new cdk.CfnOutput(this, exportName, { value: buildConfig.cfPrdBucket.bucketArn, exportName }); 
 
   }
