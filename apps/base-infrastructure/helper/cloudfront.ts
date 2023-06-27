@@ -40,7 +40,7 @@ const createCloudfrontFn = (scope: Stack, functionName: string, relPath: string 
 export const createCloudfront = (scope: Stack, buildConfig: BuildConfig, env: 'dev' | 'stg' | 'prd') => {
 
     // Set to production bucket by default
-    let bkt: S3.IBucket = buildConfig.cfDevBucket!;
+    let bkt: S3.IBucket = buildConfig.cfPrdBucket!;
     let domainName = buildConfig.DomainName;
     let longEnv = 'Production';
 
