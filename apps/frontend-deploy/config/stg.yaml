@@ -1,0 +1,32 @@
+CertificateARN: "arn:aws:acm:us-east-1:216211142709:certificate/7fb3994e-eab7-42a0-ab12-be99258ec706"
+
+AWSAccountID: "216211142709"
+AWSProfileName: "cameronguy-biz-stg"
+AWSProfileRegion: "eu-west-2"
+
+App: "CameronGuy-biz"
+Prefix: "cameronguy-biz"
+
+CorsServer: http://localhost:3000
+DomainName: cameronguy.biz
+ApiDomainName: stg.cameronguy.biz
+DATABASEHOST: database-arn
+DATABASEUSER: Admin
+DATABASEPASSWORD: Sybase01
+DATABASENAME: tutordev
+DATABASEPORT: 3306
+JWTSECRET: stgBestTutoringSite
+JWTREFRESHSECRET: stgEhUp02Chuck01
+
+ # Add for the database
+    #  Dev:
+    #   BackupRetentionPeriod: 0
+    #   DeleteAutomatedBackups: true
+    #   DeletionProtection: false
+    #   DeletionPolicy: false
+    #   MultiAZ: false
+    # Prod:
+    #   BackupRetentionPeriod: 7
+    #   DeleteAutomatedBackups: false
+    #   DeletionProtection: true
+    #   MultiAZ: true
