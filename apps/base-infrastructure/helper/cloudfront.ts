@@ -92,7 +92,7 @@ export const createCloudfront = (scope: Stack, buildConfig: BuildConfig, env: 'd
       
       const cfTarget = new aws_route53_targets.CloudFrontTarget(cf);
 
-      setRoute53Alias ( scope, buildConfig, env, cfTarget)
+      setRoute53Alias ( scope, buildConfig, (env === 'prd' ? '' : env), cfTarget)
 
     return cf;
 }
