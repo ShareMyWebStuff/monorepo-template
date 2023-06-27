@@ -42,7 +42,7 @@ export class FrontendDeployStack extends cdk.Stack {
         distributionPaths: ['/*'],
       });
 
-      let exportName = buildConfig.Prefix + "-deploy-url" 
+      let exportName = buildConfig.Prefix + "-" + buildConfig.Environment + "-deploy-url" 
       new cdk.CfnOutput(this, exportName, { value: `https.${buildConfig.DomainName}`, exportName }); 
   }
 }
